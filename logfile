@@ -1,88 +1,28 @@
-2025-08-28 18:12:48.593 UTC [328] LOG:  starting PostgreSQL 17.5 on x86_64-pc-linux-gnu, compiled by clang version 19.1.7, 64-bit
-2025-08-28 18:12:48.597 UTC [328] LOG:  listening on IPv4 address "127.0.0.1", port 5432
-2025-08-28 18:12:48.597 UTC [328] LOG:  could not bind IPv6 address "::1": Cannot assign requested address
-2025-08-28 18:12:48.599 UTC [328] FATAL:  could not create lock file "/run/postgresql/.s.PGSQL.5432.lock": No such file or directory
-2025-08-28 18:12:48.602 UTC [328] LOG:  database system is shut down
-2025-08-28 18:22:27.889 UTC [396] LOG:  starting PostgreSQL 17.5 on x86_64-pc-linux-gnu, compiled by clang version 19.1.7, 64-bit
-2025-08-28 18:22:27.890 UTC [396] LOG:  listening on IPv4 address "127.0.0.1", port 5432
-2025-08-28 18:22:27.891 UTC [396] LOG:  could not bind IPv6 address "::1": Cannot assign requested address
-2025-08-28 18:22:27.899 UTC [396] LOG:  listening on Unix socket "/run/postgresql/.s.PGSQL.5432"
-2025-08-28 18:22:27.938 UTC [399] LOG:  database system was shut down at 2025-08-28 18:07:48 UTC
-2025-08-28 18:22:27.944 UTC [396] LOG:  database system is ready to accept connections
-2025-08-28 18:27:28.038 UTC [397] LOG:  checkpoint starting: time
-2025-08-28 18:27:32.422 UTC [397] LOG:  checkpoint complete: wrote 46 buffers (0.3%); 0 WAL file(s) added, 0 removed, 0 recycled; write=4.314 s, sync=0.048 s, total=4.384 s; sync files=11, longest=0.008 s, average=0.005 s; distance=270 kB, estimate=270 kB; lsn=0/1530588, redo lsn=0/1530530
-2025-08-28 18:32:33.979 UTC [458] FATAL:  database "heliumdb" does not exist
-2025-08-28 18:42:28.722 UTC [397] LOG:  checkpoint starting: time
-2025-08-28 18:44:02.224 UTC [397] LOG:  checkpoint complete: wrote 932 buffers (5.7%); 0 WAL file(s) added, 0 removed, 0 recycled; write=93.251 s, sync=0.236 s, total=93.502 s; sync files=300, longest=0.012 s, average=0.001 s; distance=4266 kB, estimate=4266 kB; lsn=0/195AFF8, redo lsn=0/195AF68
-2025-08-28 18:56:12.446 UTC [667] ERROR:  syntax error at or near "-" at character 38
-2025-08-28 18:56:12.446 UTC [667] STATEMENT:  ALTER DATABASE meu_banco OWNER TO meu-usuario;
-2025-08-28 18:57:28.538 UTC [397] LOG:  checkpoint starting: time
-2025-08-28 18:57:29.772 UTC [397] LOG:  checkpoint complete: wrote 11 buffers (0.1%); 0 WAL file(s) added, 0 removed, 0 recycled; write=1.003 s, sync=0.214 s, total=1.235 s; sync files=9, longest=0.184 s, average=0.024 s; distance=5 kB, estimate=3840 kB; lsn=0/195C500, redo lsn=0/195C4A8
-2025-08-28 19:22:29.272 UTC [397] LOG:  checkpoint starting: time
-2025-08-28 19:22:35.162 UTC [397] LOG:  checkpoint complete: wrote 58 buffers (0.4%); 0 WAL file(s) added, 0 removed, 0 recycled; write=5.725 s, sync=0.140 s, total=5.891 s; sync files=43, longest=0.014 s, average=0.004 s; distance=162 kB, estimate=3472 kB; lsn=0/1984FA8, redo lsn=0/1984F18
-2025-08-28 19:32:29.362 UTC [397] LOG:  checkpoint starting: time
-2025-08-28 19:32:35.279 UTC [397] LOG:  checkpoint complete: wrote 58 buffers (0.4%); 0 WAL file(s) added, 0 removed, 0 recycled; write=5.732 s, sync=0.165 s, total=5.918 s; sync files=48, longest=0.017 s, average=0.004 s; distance=172 kB, estimate=3142 kB; lsn=0/19B02D8, redo lsn=0/19B0248
-2025-08-28 20:03:22.627 UTC [1365] LOG:  invalid length of startup packet
-2025-08-28 20:03:22.632 UTC [1366] LOG:  invalid length of startup packet
-2025-08-28 20:03:22.638 UTC [1367] LOG:  invalid length of startup packet
-2025-08-28 20:03:22.642 UTC [1368] LOG:  invalid length of startup packet
-2025-08-28 20:03:36.422 UTC [1418] LOG:  invalid length of startup packet
-2025-08-28 20:03:36.431 UTC [1419] LOG:  invalid length of startup packet
-2025-08-28 20:03:36.434 UTC [1420] LOG:  invalid length of startup packet
-2025-08-28 20:03:36.437 UTC [1421] LOG:  invalid length of startup packet
-2025-08-28 20:14:27.182 UTC [1597] LOG:  invalid length of startup packet
-2025-08-28 20:14:27.189 UTC [1598] LOG:  invalid length of startup packet
-2025-08-28 20:14:27.192 UTC [1599] LOG:  invalid length of startup packet
-2025-08-28 20:14:27.195 UTC [1600] LOG:  invalid length of startup packet
-2025-08-28 20:15:13.678 UTC [1702] LOG:  invalid length of startup packet
-2025-08-28 20:15:13.681 UTC [1703] LOG:  invalid length of startup packet
-2025-08-28 20:15:13.686 UTC [1704] LOG:  invalid length of startup packet
-2025-08-28 20:15:13.689 UTC [1705] LOG:  invalid length of startup packet
-2025-08-28 20:16:13.880 UTC [1725] LOG:  invalid length of startup packet
-2025-08-28 20:16:13.885 UTC [1726] LOG:  invalid length of startup packet
-2025-08-28 20:16:13.888 UTC [1727] LOG:  invalid length of startup packet
-2025-08-28 20:16:13.891 UTC [1728] LOG:  invalid length of startup packet
-2025-08-28 20:17:14.172 UTC [1751] LOG:  invalid length of startup packet
-2025-08-28 20:17:14.179 UTC [1752] LOG:  invalid length of startup packet
-2025-08-28 20:17:14.182 UTC [1753] LOG:  invalid length of startup packet
-2025-08-28 20:17:14.186 UTC [1754] LOG:  invalid length of startup packet
-2025-08-28 20:18:14.526 UTC [1775] LOG:  invalid length of startup packet
-2025-08-28 20:18:14.544 UTC [1776] LOG:  invalid length of startup packet
-2025-08-28 20:18:14.549 UTC [1777] LOG:  invalid length of startup packet
-2025-08-28 20:18:14.554 UTC [1778] LOG:  invalid length of startup packet
-2025-08-28 20:19:06.239 UTC [1843] LOG:  invalid length of startup packet
-2025-08-28 20:19:06.242 UTC [1844] LOG:  invalid length of startup packet
-2025-08-28 20:19:06.247 UTC [1845] LOG:  invalid length of startup packet
-2025-08-28 20:19:06.251 UTC [1846] LOG:  invalid length of startup packet
-2025-08-28 20:37:40.246 UTC [2053] LOG:  invalid length of startup packet
-2025-08-28 20:37:40.251 UTC [2054] LOG:  invalid length of startup packet
-2025-08-28 20:37:40.253 UTC [2055] LOG:  invalid length of startup packet
-2025-08-28 20:37:40.258 UTC [2056] LOG:  invalid length of startup packet
-2025-08-28 20:53:12.486 UTC [2218] LOG:  invalid length of startup packet
-2025-08-28 20:53:12.488 UTC [2219] LOG:  invalid length of startup packet
-2025-08-28 20:53:12.491 UTC [2220] LOG:  invalid length of startup packet
-2025-08-28 20:53:12.493 UTC [2221] LOG:  invalid length of startup packet
-2025-08-28 20:54:54.749 UTC [2249] LOG:  invalid length of startup packet
-2025-08-28 20:54:54.753 UTC [2250] LOG:  invalid length of startup packet
-2025-08-28 20:54:54.759 UTC [2251] LOG:  invalid length of startup packet
-2025-08-28 20:54:54.769 UTC [2252] LOG:  invalid length of startup packet
-2025-08-28 21:27:31.583 UTC [397] LOG:  checkpoint starting: time
-2025-08-28 21:27:31.705 UTC [397] LOG:  checkpoint complete: wrote 2 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.101 s, sync=0.006 s, total=0.123 s; sync files=2, longest=0.005 s, average=0.003 s; distance=1 kB, estimate=2828 kB; lsn=0/19B0940, redo lsn=0/19B08E8
-2025-08-28 21:43:37.548 UTC [2676] FATAL:  database "heliumdb" does not exist
-2025-08-28 22:34:16.466 UTC [2972] LOG:  starting PostgreSQL 17.5 on x86_64-pc-linux-gnu, compiled by clang version 19.1.7, 64-bit
-2025-08-28 22:34:16.468 UTC [2972] LOG:  listening on IPv4 address "127.0.0.1", port 5432
-2025-08-28 22:34:16.469 UTC [2972] LOG:  could not bind IPv6 address "::1": Cannot assign requested address
-2025-08-28 22:34:16.473 UTC [2972] LOG:  listening on Unix socket "/run/postgresql/.s.PGSQL.5432"
-2025-08-28 22:34:16.486 UTC [2975] LOG:  database system was interrupted; last known up at 2025-08-28 21:27:31 UTC
-2025-08-28 22:34:16.561 UTC [2975] LOG:  database system was not properly shut down; automatic recovery in progress
-2025-08-28 22:34:16.640 UTC [2975] LOG:  redo starts at 0/19B08E8
-2025-08-28 22:34:16.640 UTC [2975] LOG:  invalid record length at 0/19B09F0: expected at least 24, got 0
-2025-08-28 22:34:16.640 UTC [2975] LOG:  redo done at 0/19B09B8 system usage: CPU: user: 0.00 s, system: 0.00 s, elapsed: 0.00 s
-2025-08-28 22:34:16.652 UTC [2973] LOG:  checkpoint starting: end-of-recovery immediate wait
-2025-08-28 22:34:16.685 UTC [2973] LOG:  checkpoint complete: wrote 3 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.002 s, sync=0.015 s, total=0.037 s; sync files=2, longest=0.012 s, average=0.008 s; distance=0 kB, estimate=0 kB; lsn=0/19B09F0, redo lsn=0/19B09F0
-2025-08-28 22:34:16.700 UTC [2972] LOG:  database system is ready to accept connections
-2025-08-28 22:34:26.741 UTC [2990] FATAL:  database "heliumdb" does not exist
-2025-08-28 23:09:17.386 UTC [2973] LOG:  checkpoint starting: time
-2025-08-28 23:09:17.938 UTC [2973] LOG:  checkpoint complete: wrote 5 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.502 s, sync=0.014 s, total=0.553 s; sync files=3, longest=0.009 s, average=0.005 s; distance=7 kB, estimate=7 kB; lsn=0/19B2A40, redo lsn=0/19B29E8
-2025-08-28 23:19:18.139 UTC [2973] LOG:  checkpoint starting: time
-2025-08-28 23:19:19.793 UTC [2973] LOG:  checkpoint complete: wrote 16 buffers (0.1%); 0 WAL file(s) added, 0 removed, 0 recycled; write=1.511 s, sync=0.124 s, total=1.655 s; sync files=12, longest=0.048 s, average=0.011 s; distance=2 kB, estimate=7 kB; lsn=0/19B3410, redo lsn=0/19B3380
+2025-09-02 00:10:26.079 UTC [449] LOG:  starting PostgreSQL 17.5 on x86_64-pc-linux-gnu, compiled by clang version 19.1.7, 64-bit
+2025-09-02 00:10:26.080 UTC [449] LOG:  listening on IPv4 address "127.0.0.1", port 5432
+2025-09-02 00:10:26.081 UTC [449] LOG:  could not bind IPv6 address "::1": Cannot assign requested address
+2025-09-02 00:10:26.083 UTC [449] FATAL:  could not create lock file "/run/postgresql/.s.PGSQL.5432.lock": No such file or directory
+2025-09-02 00:10:26.085 UTC [449] LOG:  database system is shut down
+2025-09-06 20:06:38.242 UTC [285] LOG:  starting PostgreSQL 17.5 on x86_64-pc-linux-gnu, compiled by clang version 19.1.7, 64-bit
+2025-09-06 20:06:38.254 UTC [285] LOG:  listening on IPv4 address "127.0.0.1", port 5432
+2025-09-06 20:06:38.255 UTC [285] LOG:  could not bind IPv6 address "::1": Cannot assign requested address
+2025-09-06 20:06:38.257 UTC [285] FATAL:  could not create lock file "/run/postgresql/.s.PGSQL.5432.lock": No such file or directory
+2025-09-06 20:06:38.261 UTC [285] LOG:  database system is shut down
+2025-09-06 20:07:47.534 UTC [405] LOG:  starting PostgreSQL 17.5 on x86_64-pc-linux-gnu, compiled by clang version 19.1.7, 64-bit
+2025-09-06 20:07:47.535 UTC [405] LOG:  listening on IPv4 address "127.0.0.1", port 5432
+2025-09-06 20:07:47.535 UTC [405] LOG:  could not bind IPv6 address "::1": Cannot assign requested address
+2025-09-06 20:07:47.539 UTC [405] FATAL:  could not create lock file "/run/postgresql/.s.PGSQL.5432.lock": No such file or directory
+2025-09-06 20:07:47.541 UTC [405] LOG:  database system is shut down
+2025-09-06 20:09:14.404 UTC [442] LOG:  starting PostgreSQL 17.5 on x86_64-pc-linux-gnu, compiled by clang version 19.1.7, 64-bit
+2025-09-06 20:09:14.405 UTC [442] LOG:  listening on IPv4 address "127.0.0.1", port 5432
+2025-09-06 20:09:14.406 UTC [442] LOG:  could not bind IPv6 address "::1": Cannot assign requested address
+2025-09-06 20:09:14.410 UTC [442] LOG:  listening on Unix socket "/run/postgresql/.s.PGSQL.5432"
+2025-09-06 20:09:14.425 UTC [445] LOG:  database system was shut down at 2025-09-01 23:22:52 UTC
+2025-09-06 20:09:14.455 UTC [442] LOG:  database system is ready to accept connections
+2025-09-06 20:10:21.491 UTC [442] LOG:  received fast shutdown request
+2025-09-06 20:10:21.515 UTC [442] LOG:  aborting any active transactions
+2025-09-06 20:10:21.519 UTC [442] LOG:  background worker "logical replication launcher" (PID 448) exited with exit code 1
+2025-09-06 20:10:21.521 UTC [443] LOG:  shutting down
+2025-09-06 20:10:21.531 UTC [443] LOG:  checkpoint starting: shutdown immediate
+2025-09-06 20:10:21.562 UTC [443] LOG:  checkpoint complete: wrote 3 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.002 s, sync=0.011 s, total=0.041 s; sync files=2, longest=0.006 s, average=0.006 s; distance=0 kB, estimate=0 kB; lsn=0/196D028, redo lsn=0/196D028
+2025-09-06 20:10:21.572 UTC [442] LOG:  database system is shut down

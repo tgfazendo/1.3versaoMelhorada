@@ -6,8 +6,10 @@ CREATE TABLE users (
     matricula VARCHAR(13) UNIQUE NOT NULL,
     role VARCHAR(20) CHECK (role IN ('professor', 'suporte')) NOT NULL,
     criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    celular VARCHAR(20),
+    data_nascimento DATE,
     CONSTRAINT fk_matricula FOREIGN KEY (matricula)
-    REFERENCES matriculas_autorizadas(matricula)
-    ON UPDATE CASCADE
-    ON DELETE RESTRICT
+        REFERENCES matriculas_autorizadas(matricula)
+        ON UPDATE CASCADE
+        ON DELETE RESTRICT
 );

@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", function () {
     // 🔗 URL do backend
-    const API_URL = "https://29a894fe-542c-48e5-a6b0-eaeae3c39c85-00-3eytixkhfu5er.worf.replit.dev/api"; // Inclui /api
+    const API_URL = "https://be69f70b-b003-4eab-9065-ed94187332e8-00-2hq1yhfipfx9g.kirk.replit.dev/api";
 
     // Elementos do DOM
     const registerForm = document.getElementById("registerForm");
@@ -13,6 +13,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const strengthText = document.querySelector(".strength-text strong");
     const phoneInput = document.getElementById("phone");
     const submitBtn = document.querySelector(".btn-submit");
+    const birthDateInput = document.getElementById("birthDate");
 
     // Máscara para telefone
     if (phoneInput) {
@@ -23,7 +24,7 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // Toggle de tipo de usuário (apenas visual)
+    // Toggle de tipo de usuário
     typeButtons.forEach((button) => {
         button.addEventListener("click", function () {
             typeButtons.forEach((btn) => btn.classList.remove("active"));
@@ -47,12 +48,12 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 
-    // Verificar correspondência de senhas
+    // Correspondência de senhas
     if (confirmPasswordInput) {
         confirmPasswordInput.addEventListener("input", checkPasswordMatch);
     }
 
-    // Medidor de força da senha
+    // Força da senha
     if (passwordInput) {
         passwordInput.addEventListener("input", function () {
             checkPasswordStrength(this.value);
@@ -60,29 +61,30 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // Validação do formulário e envio
+    // Validação e envio do formulário
     if (registerForm) {
         registerForm.addEventListener("submit", function (e) {
             e.preventDefault();
 
             if (validateForm()) {
                 submitBtn.disabled = true;
-                submitBtn.innerHTML =
-                    '<i class="fas fa-spinner fa-spin"></i> Cadastrando...';
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Cadastrando...';
 
-                // Criar objeto com os dados do formulário (sem enviar role)
+                // Dados do formulário completos
                 const formData = {
                     nome: document.getElementById("fullName").value,
                     email: document.getElementById("email").value,
                     senha: document.getElementById("password").value,
-                    matricula: document.getElementById("employeeId").value
+                    matricula: document.getElementById("employeeId").value,
+                    phone: phoneInput ? phoneInput.value : "",
+                    birthDate: birthDateInput ? birthDateInput.value : "",
+                    role: document.querySelector(".type-btn.active").dataset.type
                 };
 
-                // Enviar para o backend
                 fetch(`${API_URL}/cadastro`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(formData),
+                    body: JSON.stringify(formData)
                 })
                     .then(async (response) => {
                         if (!response.ok) {
@@ -100,18 +102,15 @@ document.addEventListener("DOMContentLoaded", function () {
                         console.error("Erro no cadastro:", error);
                         alert(error.message || "Ocorreu um erro no cadastro. Por favor, tente novamente.");
                         submitBtn.disabled = false;
-                        submitBtn.innerHTML =
-                            '<i class="fas fa-save"></i> Cadastrar Usuário';
+                        submitBtn.innerHTML = '<i class="fas fa-save"></i> Cadastrar Usuário';
                     });
             }
         });
     }
 
     // ---------------- Funções auxiliares ----------------
-
     function formatPhoneNumber(value) {
         if (!value) return "";
-
         if (value.length <= 2) return `(${value}`;
         else if (value.length <= 7) return `(${value.slice(0, 2)}) ${value.slice(2)}`;
         else return `(${value.slice(0, 2)}) ${value.slice(2, 7)}-${value.slice(7, 11)}`;
@@ -174,12 +173,10 @@ document.addEventListener("DOMContentLoaded", function () {
     if (localStorage.getItem("showRegistrationSuccess") === "true") {
         const successMessage = document.createElement("div");
         successMessage.className = "alert alert-success";
-        successMessage.innerHTML =
-            '<i class="fas fa-check-circle"></i> Usuário cadastrado com sucesso!';
+        successMessage.innerHTML = '<i class="fas fa-check-circle"></i> Usuário cadastrado com sucesso!';
         document.querySelector("main").prepend(successMessage);
 
         localStorage.removeItem("showRegistrationSuccess");
-
         setTimeout(() => successMessage.remove(), 5000);
     }
 });

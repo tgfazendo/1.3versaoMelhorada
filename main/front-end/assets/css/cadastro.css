@@ -269,3 +269,73 @@
         justify-content: center;
     }
 }
+
+/* =======================
+   Popups de Alerta Modernos
+   ======================= */
+.alert {
+    padding: 15px 25px;
+    margin-bottom: 20px;
+    border-radius: 12px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    opacity: 0;
+    transform: translateY(-20px);
+    transition: all 0.4s ease;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+    text-align: center;
+    z-index: 999;
+    pointer-events: none;
+}
+
+.alert.visible {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+}
+
+.alert-success {
+    color: #fff;
+    background: linear-gradient(135deg, #09c372, #00a86b);
+    border: 1px solid #07a361;
+}
+
+.alert-error {
+    color: #fff;
+    background: linear-gradient(135deg, #ff3860, #e6003a);
+    border: 1px solid #e6003a;
+}
+
+.alert i {
+    font-size: 1.2rem;
+}
+
+/* Pequena animação de entrada/saída */
+@keyframes slideIn {
+    0% { opacity: 0; transform: translateY(-20px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+
+.alert.visible {
+    animation: slideIn 0.4s forwards;
+}
+
+/* Responsividade dos popups */
+@media (max-width: 600px) {
+    .alert {
+        width: 90%;
+        padding: 12px 20px;
+        font-size: 0.9rem;
+    }
+}
+
+
+.alert-warning {
+    color: #fff;
+    background: linear-gradient(135deg, #ffb347, #ffcc33);
+    border: 1px solid #ffb347;
+}
