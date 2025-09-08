@@ -1,182 +1,166 @@
-document.addEventListener("DOMContentLoaded", function () {
-    // 🔗 URL do backend
-    const API_URL = "https://be69f70b-b003-4eab-9065-ed94187332e8-00-2hq1yhfipfx9g.kirk.replit.dev/api";
+import express from "express";
+import path from "path";
+import { fileURLToPath } from "url";
+import { Pool } from "pg";
+import bcrypt from "bcrypt";
+import cors from "cors";
+import jwt from "jsonwebtoken";
+import crypto from "crypto";
 
-    // Elementos do DOM
-    const registerForm = document.getElementById("registerForm");
-    const typeButtons = document.querySelectorAll(".type-btn");
-    const showPasswordBtns = document.querySelectorAll(".show-password");
-    const passwordInput = document.getElementById("password");
-    const confirmPasswordInput = document.getElementById("confirmPassword");
-    const passwordMatchFeedback = document.querySelector(".password-match-feedback");
-    const strengthBar = document.querySelector(".strength-bar");
-    const strengthText = document.querySelector(".strength-text strong");
-    const phoneInput = document.getElementById("phone");
-    const submitBtn = document.querySelector(".btn-submit");
-    const birthDateInput = document.getElementById("birthDate");
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-    // Máscara para telefone
-    if (phoneInput) {
-        phoneInput.addEventListener("input", function (e) {
-            const value = e.target.value.replace(/\D/g, "");
-            const formattedValue = formatPhoneNumber(value);
-            e.target.value = formattedValue;
-        });
-    }
+const app = express();
+app.use(cors());
+app.use(express.json());
 
-    // Toggle de tipo de usuário
-    typeButtons.forEach((button) => {
-        button.addEventListener("click", function () {
-            typeButtons.forEach((btn) => btn.classList.remove("active"));
-            this.classList.add("active");
-        });
-    });
-
-    // Mostrar/ocultar senha
-    showPasswordBtns.forEach((btn) => {
-        btn.addEventListener("click", function () {
-            const input = this.parentElement.querySelector("input");
-            const icon = this.querySelector("i");
-
-            if (input.type === "password") {
-                input.type = "text";
-                icon.classList.replace("fa-eye", "fa-eye-slash");
-            } else {
-                input.type = "password";
-                icon.classList.replace("fa-eye-slash", "fa-eye");
-            }
-        });
-    });
-
-    // Correspondência de senhas
-    if (confirmPasswordInput) {
-        confirmPasswordInput.addEventListener("input", checkPasswordMatch);
-    }
-
-    // Força da senha
-    if (passwordInput) {
-        passwordInput.addEventListener("input", function () {
-            checkPasswordStrength(this.value);
-            checkPasswordMatch();
-        });
-    }
-
-    // Validação e envio do formulário
-    if (registerForm) {
-        registerForm.addEventListener("submit", function (e) {
-            e.preventDefault();
-
-            if (validateForm()) {
-                submitBtn.disabled = true;
-                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Cadastrando...';
-
-                // Dados do formulário completos
-                const formData = {
-                    nome: document.getElementById("fullName").value,
-                    email: document.getElementById("email").value,
-                    senha: document.getElementById("password").value,
-                    matricula: document.getElementById("employeeId").value,
-                    phone: phoneInput ? phoneInput.value : "",
-                    birthDate: birthDateInput ? birthDateInput.value : "",
-                    role: document.querySelector(".type-btn.active").dataset.type
-                };
-
-                fetch(`${API_URL}/cadastro`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(formData)
-                })
-                    .then(async (response) => {
-                        if (!response.ok) {
-                            const error = await response.json();
-                            throw new Error(error.message || "Erro no servidor");
-                        }
-                        return response.json();
-                    })
-                    .then((data) => {
-                        console.log("Cadastro realizado:", data);
-                        localStorage.setItem("showRegistrationSuccess", "true");
-                        window.location.href = "login.html";
-                    })
-                    .catch((error) => {
-                        console.error("Erro no cadastro:", error);
-                        alert(error.message || "Ocorreu um erro no cadastro. Por favor, tente novamente.");
-                        submitBtn.disabled = false;
-                        submitBtn.innerHTML = '<i class="fas fa-save"></i> Cadastrar Usuário';
-                    });
-            }
-        });
-    }
-
-    // ---------------- Funções auxiliares ----------------
-    function formatPhoneNumber(value) {
-        if (!value) return "";
-        if (value.length <= 2) return `(${value}`;
-        else if (value.length <= 7) return `(${value.slice(0, 2)}) ${value.slice(2)}`;
-        else return `(${value.slice(0, 2)}) ${value.slice(2, 7)}-${value.slice(7, 11)}`;
-    }
-
-    function checkPasswordMatch() {
-        if (passwordInput.value && confirmPasswordInput.value) {
-            if (passwordInput.value !== confirmPasswordInput.value) {
-                passwordMatchFeedback.textContent = "As senhas não coincidem";
-                passwordMatchFeedback.className = "password-match-feedback visible no-match";
-                return false;
-            } else {
-                passwordMatchFeedback.textContent = "As senhas coincidem";
-                passwordMatchFeedback.className = "password-match-feedback visible match";
-                return true;
-            }
-        }
-        return false;
-    }
-
-    function checkPasswordStrength(password) {
-        const strength = calculatePasswordStrength(password);
-        strengthBar.style.width = `${strength.percentage}%`;
-        strengthBar.style.backgroundColor = strength.color;
-        strengthText.textContent = strength.text;
-        strengthText.style.color = strength.color;
-    }
-
-    function calculatePasswordStrength(password) {
-        let strength = 0;
-        if (password.length > 5) strength += 1;
-        if (password.length > 8) strength += 1;
-        if (/[A-Z]/.test(password)) strength += 1;
-        if (/[0-9]/.test(password)) strength += 1;
-        if (/[^A-Za-z0-9]/.test(password)) strength += 1;
-
-        if (strength <= 2) return { percentage: 33, color: "#ff3860", text: "fraca" };
-        else if (strength <= 4) return { percentage: 66, color: "#ffdd57", text: "média" };
-        else return { percentage: 100, color: "#09c372", text: "forte" };
-    }
-
-    function validateForm() {
-        let isValid = true;
-        const emailInput = document.getElementById("email");
-
-        if (emailInput && !emailInput.value.endsWith("@fatec.sp.gov.br")) {
-            emailInput.classList.add("invalid");
-            alert("Por favor, use seu email institucional (@fatec.sp.gov.br)");
-            isValid = false;
-        }
-
-        if (!checkPasswordMatch()) isValid = false;
-
-        return isValid;
-    }
+// -------------------
+// Conexão com Postgres
+// -------------------
+const pool = new Pool({
+  user: "meu_usuario",
+  host: "127.0.0.1",
+  database: "meu_banco",
+  password: "sua_senha",
+  port: 5432,
 });
 
-// Mostrar mensagem de sucesso após cadastro
-document.addEventListener("DOMContentLoaded", function () {
-    if (localStorage.getItem("showRegistrationSuccess") === "true") {
-        const successMessage = document.createElement("div");
-        successMessage.className = "alert alert-success";
-        successMessage.innerHTML = '<i class="fas fa-check-circle"></i> Usuário cadastrado com sucesso!';
-        document.querySelector("main").prepend(successMessage);
+pool.connect()
+  .then(() => console.log("Postgres OK ✅"))
+  .catch(err => console.error("Erro Postgres ❌", err));
 
-        localStorage.removeItem("showRegistrationSuccess");
-        setTimeout(() => successMessage.remove(), 5000);
-    }
+// -------------------
+// ROTAS
+// -------------------
+
+// Cadastro de usuário
+app.post("/api/cadastro", async (req, res) => {
+  const { nome, email, senha, matricula } = req.body;
+  try {
+    // Verifica matrícula
+    const matriculaResult = await pool.query(
+      "SELECT * FROM matriculas_autorizadas WHERE matricula = $1 AND status = 'ativa'",
+      [matricula]
+    );
+    if (matriculaResult.rows.length === 0)
+      return res.status(400).json({ erro: "Matrícula inválida ou inativa" });
+
+    const role = matriculaResult.rows[0].role;
+    const senhaHash = await bcrypt.hash(senha, 10);
+
+    const userResult = await pool.query(
+      `INSERT INTO users (nome, email, senha_hash, matricula, role)
+       VALUES ($1, $2, $3, $4, $5)
+       RETURNING id, nome, email, matricula, role`,
+      [nome, email, senhaHash, matricula, role]
+    );
+
+    res.status(201).json(userResult.rows[0]);
+  } catch (err) {
+    console.error(err);
+    if (err.message.includes("duplicate key"))
+      return res.status(400).json({ erro: "Email ou matrícula já cadastrados" });
+    res.status(500).json({ erro: "Erro interno no servidor" });
+  }
 });
+
+// Login
+app.post("/api/login", async (req, res) => {
+  const { email, senha } = req.body;
+  try {
+    const result = await pool.query("SELECT * FROM users WHERE email = $1", [email]);
+    if (result.rows.length === 0)
+      return res.status(400).json({ erro: "Usuário não encontrado" });
+
+    const user = result.rows[0];
+    const senhaValida = await bcrypt.compare(senha, user.senha_hash);
+    if (!senhaValida) return res.status(400).json({ erro: "Senha incorreta" });
+
+    const token = jwt.sign(
+      { id: user.id, email: user.email, role: user.role },
+      "segredo123",
+      { expiresIn: "1h" }
+    );
+
+    res.json({ token, user: { id: user.id, nome: user.nome, email: user.email, role: user.role } });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ erro: "Erro interno no servidor" });
+  }
+});
+
+// Recuperar senha
+app.post("/api/recuperar-senha", async (req, res) => {
+  const { email } = req.body;
+  try {
+    const result = await pool.query("SELECT * FROM users WHERE email = $1", [email]);
+    if (result.rows.length === 0)
+      return res.status(400).json({ erro: "Email não cadastrado" });
+
+    // Gera token aleatório
+    const token = crypto.randomBytes(20).toString("hex");
+    const expiraEm = new Date(Date.now() + 60 * 60 * 1000); // 1h
+
+    // Salva token no banco
+    await pool.query(
+      `INSERT INTO password_reset_tokens (user_id, token, expira_em, usado)
+       VALUES ($1, $2, $3, $4)`,
+      [result.rows[0].id, token, expiraEm, false]
+    );
+
+    // Aqui você enviaria email com link de recuperação
+    console.log(`Link para redefinir senha: http://localhost:3000/redefinir-senha?token=${token}`);
+
+    res.json({ message: "Link de recuperação enviado!" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ erro: "Erro interno no servidor" });
+  }
+});
+
+// Redefinir senha
+app.post("/api/redefinir-senha", async (req, res) => {
+  const { token, novaSenha } = req.body;
+  try {
+    const tokenResult = await pool.query(
+      `SELECT * FROM password_reset_tokens WHERE token = $1 AND usado = false AND expira_em > NOW()`,
+      [token]
+    );
+
+    if (tokenResult.rows.length === 0)
+      return res.status(400).json({ erro: "Token inválido ou expirado" });
+
+    const userId = tokenResult.rows[0].user_id;
+    const senhaHash = await bcrypt.hash(novaSenha, 10);
+
+    await pool.query(
+      `UPDATE users SET senha_hash = $1 WHERE id = $2`,
+      [senhaHash, userId]
+    );
+
+    await pool.query(
+      `UPDATE password_reset_tokens SET usado = true WHERE id = $1`,
+      [tokenResult.rows[0].id]
+    );
+
+    res.json({ message: "Senha redefinida com sucesso!" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ erro: "Erro interno no servidor" });
+  }
+});
+
+// -------------------
+// Servir frontend
+// -------------------
+const frontPath = path.resolve(__dirname, "../front-end");
+app.use(express.static(frontPath));
+app.get(/^\/(?!api).*/, (req, res) => {
+  res.sendFile(path.join(frontPath, "index.html"));
+});
+
+// -------------------
+// Rodar servidor
+// -------------------
+const PORT = 3000;
+app.listen(PORT, () => console.log(`Servidor rodando na porta ${PORT} 🚀`));
