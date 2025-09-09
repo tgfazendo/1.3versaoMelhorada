@@ -30,14 +30,11 @@ pool.connect()
   .catch(err => console.error("Erro Postgres ❌", err));
 
 // -------------------
-// ROTAS
-// -------------------
-
 // Cadastro de usuário
+// -------------------
 app.post("/api/cadastro", async (req, res) => {
   const { nome, email, senha, matricula } = req.body;
   try {
-    // Verifica matrícula
     const matriculaResult = await pool.query(
       "SELECT * FROM matriculas_autorizadas WHERE matricula = $1 AND status = 'ativa'",
       [matricula]
@@ -64,7 +61,9 @@ app.post("/api/cadastro", async (req, res) => {
   }
 });
 
+// -------------------
 // Login
+// -------------------
 app.post("/api/login", async (req, res) => {
   const { email, senha } = req.body;
   try {
@@ -89,7 +88,9 @@ app.post("/api/login", async (req, res) => {
   }
 });
 
+// -------------------
 // Recuperar senha
+// -------------------
 app.post("/api/recuperar-senha", async (req, res) => {
   const { email } = req.body;
   try {
@@ -97,20 +98,16 @@ app.post("/api/recuperar-senha", async (req, res) => {
     if (result.rows.length === 0)
       return res.status(400).json({ erro: "Email não cadastrado" });
 
-    // Gera token aleatório
     const token = crypto.randomBytes(20).toString("hex");
     const expiraEm = new Date(Date.now() + 60 * 60 * 1000); // 1h
 
-    // Salva token no banco
     await pool.query(
-      `INSERT INTO password_reset_tokens (user_id, token, expira_em, usado)
+      `INSERT INTO resetSenha (user_id, token, expira_em, usado)
        VALUES ($1, $2, $3, $4)`,
       [result.rows[0].id, token, expiraEm, false]
     );
 
-    // Aqui você enviaria email com link de recuperação
     console.log(`Link para redefinir senha: http://localhost:3000/redefinir-senha?token=${token}`);
-
     res.json({ message: "Link de recuperação enviado!" });
   } catch (err) {
     console.error(err);
@@ -118,12 +115,14 @@ app.post("/api/recuperar-senha", async (req, res) => {
   }
 });
 
+// -------------------
 // Redefinir senha
+// -------------------
 app.post("/api/redefinir-senha", async (req, res) => {
   const { token, novaSenha } = req.body;
   try {
     const tokenResult = await pool.query(
-      `SELECT * FROM password_reset_tokens WHERE token = $1 AND usado = false AND expira_em > NOW()`,
+      `SELECT * FROM resetSenha WHERE token = $1 AND usado = false AND expira_em > NOW()`,
       [token]
     );
 
@@ -139,7 +138,7 @@ app.post("/api/redefinir-senha", async (req, res) => {
     );
 
     await pool.query(
-      `UPDATE password_reset_tokens SET usado = true WHERE id = $1`,
+      `UPDATE resetSenha SET usado = true WHERE id = $1`,
       [tokenResult.rows[0].id]
     );
 
@@ -147,6 +146,51 @@ app.post("/api/redefinir-senha", async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ erro: "Erro interno no servidor" });
+  }
+});
+
+// -------------------
+// Middleware de autenticação JWT
+// -------------------
+function autenticarJWT(req, res, next) {
+  const authHeader = req.headers.authorization;
+  if (!authHeader) return res.status(401).json({ erro: "Token não fornecido" });
+
+  const token = authHeader.split(" ")[1];
+  jwt.verify(token, "segredo123", (err, user) => {
+    if (err) return res.status(403).json({ erro: "Token inválido" });
+    req.user = user;
+    next();
+  });
+}
+
+// -------------------
+// Rota para buscar ordens do professor logado
+// -------------------
+app.get("/api/ordens", autenticarJWT, async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const result = await pool.query(
+      "SELECT id, titulo, descricao, status, data_criacao FROM ordens WHERE professor_id = $1 ORDER BY data_criacao DESC",
+      [userId]
+    );
+
+    const ordens = result.rows.map(o => ({
+      codigo: "ORD-" + o.id.toString().padStart(4, "0"),
+      titulo: o.titulo,
+      descricao: o.descricao,
+      status: o.status,
+      statusNome: o.status === "pending" ? "Pendente" :
+                  o.status === "in-progress" ? "Em Andamento" : "Concluída",
+      statusIcon: o.status === "pending" ? "clock" :
+                  o.status === "in-progress" ? "spinner" : "check",
+      data: new Date(o.data_criacao).toLocaleDateString("pt-BR")
+    }));
+
+    res.json(ordens);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ erro: "Erro ao buscar ordens" });
   }
 });
 

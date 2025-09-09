@@ -76,6 +76,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 const user = data.user;
                 const token = data.token;
 
+                // Salva token e usuário no localStorage
                 localStorage.setItem('authToken', token);
                 localStorage.setItem('currentUser', JSON.stringify(user));
 

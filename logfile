@@ -1,28 +1,41 @@
-2025-09-06 21:39:47.608 UTC [1382] LOG:  starting PostgreSQL 17.5 on x86_64-pc-linux-gnu, compiled by clang version 19.1.7, 64-bit
-2025-09-06 21:39:47.610 UTC [1382] LOG:  listening on IPv4 address "127.0.0.1", port 5432
-2025-09-06 21:39:47.610 UTC [1382] LOG:  could not bind IPv6 address "::1": Cannot assign requested address
-2025-09-06 21:39:47.615 UTC [1382] LOG:  listening on Unix socket "/run/postgresql/.s.PGSQL.5432"
-2025-09-06 21:39:47.622 UTC [1385] LOG:  database system was shut down at 2025-09-06 20:36:51 UTC
-2025-09-06 21:39:47.638 UTC [1382] LOG:  database system is ready to accept connections
-2025-09-06 21:44:06.856 UTC [1382] LOG:  received fast shutdown request
-2025-09-06 21:44:06.877 UTC [1382] LOG:  aborting any active transactions
-2025-09-06 21:44:06.879 UTC [1382] LOG:  background worker "logical replication launcher" (PID 1388) exited with exit code 1
-2025-09-06 21:44:06.879 UTC [1383] LOG:  shutting down
-2025-09-06 21:44:06.894 UTC [1383] LOG:  checkpoint starting: shutdown immediate
-2025-09-06 21:44:06.926 UTC [1383] LOG:  checkpoint complete: wrote 5 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.001 s, sync=0.018 s, total=0.047 s; sync files=4, longest=0.011 s, average=0.005 s; distance=0 kB, estimate=0 kB; lsn=0/196C1C0, redo lsn=0/196C1C0
-2025-09-06 21:44:06.930 UTC [1382] LOG:  database system is shut down
-2025-09-06 22:01:36.137 UTC [1823] LOG:  starting PostgreSQL 17.5 on x86_64-pc-linux-gnu, compiled by clang version 19.1.7, 64-bit
-2025-09-06 22:01:36.155 UTC [1823] LOG:  listening on IPv4 address "127.0.0.1", port 5432
-2025-09-06 22:01:36.156 UTC [1823] LOG:  could not bind IPv6 address "::1": Cannot assign requested address
-2025-09-06 22:01:36.165 UTC [1823] LOG:  listening on Unix socket "/run/postgresql/.s.PGSQL.5432"
-2025-09-06 22:01:36.174 UTC [1826] LOG:  database system was shut down at 2025-09-06 21:44:06 UTC
-2025-09-06 22:01:36.190 UTC [1823] LOG:  database system is ready to accept connections
-2025-09-06 22:06:36.274 UTC [1824] LOG:  checkpoint starting: time
-2025-09-06 22:06:36.320 UTC [1824] LOG:  checkpoint complete: wrote 3 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.001 s, sync=0.014 s, total=0.047 s; sync files=2, longest=0.011 s, average=0.007 s; distance=0 kB, estimate=0 kB; lsn=0/196C2C8, redo lsn=0/196C270
-2025-09-06 22:08:55.214 UTC [1823] LOG:  received fast shutdown request
-2025-09-06 22:08:55.234 UTC [1823] LOG:  aborting any active transactions
-2025-09-06 22:08:55.237 UTC [1823] LOG:  background worker "logical replication launcher" (PID 1829) exited with exit code 1
-2025-09-06 22:08:55.237 UTC [1824] LOG:  shutting down
-2025-09-06 22:08:55.247 UTC [1824] LOG:  checkpoint starting: shutdown immediate
-2025-09-06 22:08:55.265 UTC [1824] LOG:  checkpoint complete: wrote 0 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.001 s, sync=0.001 s, total=0.028 s; sync files=0, longest=0.000 s, average=0.000 s; distance=0 kB, estimate=0 kB; lsn=0/196C378, redo lsn=0/196C378
-2025-09-06 22:08:55.269 UTC [1823] LOG:  database system is shut down
+2025-09-08 23:12:46.718 UTC [489] LOG:  starting PostgreSQL 17.5 on x86_64-pc-linux-gnu, compiled by clang version 19.1.7, 64-bit
+2025-09-08 23:12:46.720 UTC [489] LOG:  listening on IPv4 address "127.0.0.1", port 5432
+2025-09-08 23:12:46.720 UTC [489] LOG:  could not bind IPv6 address "::1": Cannot assign requested address
+2025-09-08 23:12:46.724 UTC [489] FATAL:  could not create lock file "/run/postgresql/.s.PGSQL.5432.lock": No such file or directory
+2025-09-08 23:12:46.725 UTC [489] LOG:  database system is shut down
+2025-09-08 23:17:33.164 UTC [571] LOG:  starting PostgreSQL 17.5 on x86_64-pc-linux-gnu, compiled by clang version 19.1.7, 64-bit
+2025-09-08 23:17:33.165 UTC [571] LOG:  listening on IPv4 address "127.0.0.1", port 5432
+2025-09-08 23:17:33.166 UTC [571] LOG:  could not bind IPv6 address "::1": Cannot assign requested address
+2025-09-08 23:17:33.173 UTC [571] LOG:  listening on Unix socket "/run/postgresql/.s.PGSQL.5432"
+2025-09-08 23:17:33.273 UTC [574] LOG:  database system was shut down at 2025-09-08 19:01:57 UTC
+2025-09-08 23:17:33.314 UTC [571] LOG:  database system is ready to accept connections
+2025-09-08 23:22:33.314 UTC [572] LOG:  checkpoint starting: time
+2025-09-08 23:22:38.826 UTC [572] LOG:  checkpoint complete: wrote 57 buffers (0.3%); 0 WAL file(s) added, 0 removed, 0 recycled; write=5.418 s, sync=0.041 s, total=5.513 s; sync files=17, longest=0.005 s, average=0.003 s; distance=278 kB, estimate=278 kB; lsn=0/196B770, redo lsn=0/196B718
+2025-09-08 23:28:26.983 UTC [571] LOG:  received fast shutdown request
+2025-09-08 23:28:27.001 UTC [571] LOG:  aborting any active transactions
+2025-09-08 23:28:27.003 UTC [571] LOG:  background worker "logical replication launcher" (PID 577) exited with exit code 1
+2025-09-08 23:28:27.003 UTC [572] LOG:  shutting down
+2025-09-08 23:28:27.012 UTC [572] LOG:  checkpoint starting: shutdown immediate
+2025-09-08 23:28:27.033 UTC [572] LOG:  checkpoint complete: wrote 0 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.001 s, sync=0.001 s, total=0.030 s; sync files=0, longest=0.000 s, average=0.000 s; distance=0 kB, estimate=250 kB; lsn=0/196B820, redo lsn=0/196B820
+2025-09-08 23:28:27.038 UTC [571] LOG:  database system is shut down
+2025-09-08 23:42:48.465 UTC [1540] LOG:  starting PostgreSQL 17.5 on x86_64-pc-linux-gnu, compiled by clang version 19.1.7, 64-bit
+2025-09-08 23:42:48.470 UTC [1540] LOG:  listening on IPv4 address "127.0.0.1", port 5432
+2025-09-08 23:42:48.471 UTC [1540] LOG:  could not bind IPv6 address "::1": Cannot assign requested address
+2025-09-08 23:42:48.478 UTC [1540] LOG:  listening on Unix socket "/run/postgresql/.s.PGSQL.5432"
+2025-09-08 23:42:48.493 UTC [1543] LOG:  database system was shut down at 2025-09-08 23:28:27 UTC
+2025-09-08 23:42:48.614 UTC [1540] LOG:  database system is ready to accept connections
+2025-09-08 23:46:49.701 UTC [1777] ERROR:  relation "ordens" does not exist at character 57
+2025-09-08 23:46:49.701 UTC [1777] STATEMENT:  SELECT id, titulo, descricao, status, data_criacao FROM ordens WHERE professor_id = $1 ORDER BY data_criacao DESC
+2025-09-08 23:47:48.593 UTC [1541] LOG:  checkpoint starting: time
+2025-09-08 23:47:49.760 UTC [1541] LOG:  checkpoint complete: wrote 14 buffers (0.1%); 0 WAL file(s) added, 0 removed, 0 recycled; write=1.104 s, sync=0.032 s, total=1.168 s; sync files=10, longest=0.007 s, average=0.004 s; distance=2 kB, estimate=2 kB; lsn=0/196C200, redo lsn=0/196C170
+2025-09-08 23:52:48.860 UTC [1541] LOG:  checkpoint starting: time
+2025-09-08 23:52:49.527 UTC [1541] LOG:  checkpoint complete: wrote 7 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.602 s, sync=0.032 s, total=0.668 s; sync files=7, longest=0.015 s, average=0.005 s; distance=2 kB, estimate=2 kB; lsn=0/196CC40, redo lsn=0/196CBE8
+2025-09-08 23:53:37.282 UTC [1924] ERROR:  relation "ordens" does not exist at character 57
+2025-09-08 23:53:37.282 UTC [1924] STATEMENT:  SELECT id, titulo, descricao, status, data_criacao FROM ordens WHERE professor_id = $1 ORDER BY data_criacao DESC
+2025-09-09 00:04:15.024 UTC [1540] LOG:  received fast shutdown request
+2025-09-09 00:04:15.043 UTC [1540] LOG:  aborting any active transactions
+2025-09-09 00:04:15.044 UTC [1540] LOG:  background worker "logical replication launcher" (PID 1546) exited with exit code 1
+2025-09-09 00:04:15.045 UTC [1541] LOG:  shutting down
+2025-09-09 00:04:15.054 UTC [1541] LOG:  checkpoint starting: shutdown immediate
+2025-09-09 00:04:15.076 UTC [1541] LOG:  checkpoint complete: wrote 1 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.001 s, sync=0.009 s, total=0.031 s; sync files=1, longest=0.009 s, average=0.009 s; distance=0 kB, estimate=2 kB; lsn=0/196CCF0, redo lsn=0/196CCF0
+2025-09-09 00:04:15.080 UTC [1540] LOG:  database system is shut down

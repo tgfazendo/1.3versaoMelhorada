@@ -17,20 +17,20 @@
             <button class="menu-toggle" aria-label="Abrir menu">
                 <i class="fas fa-bars"></i>
             </button>
-            
-            <!-- Logo com Efeito -->
+
+            <!-- Logo -->
             <a href="painel-professor.html" class="logo-link">
                 <div class="logo-container">
                     <img src="../../assets/images/logo.png" alt="Support Nexus" class="logo">
                     <span class="logo-text">Support Nexus</span>
                 </div>
             </a>
-            
+
             <!-- Perfil do Usuário -->
             <div class="user-profile">
                 <div class="profile-info">
-                    <span class="user-name">Prof. Carlos</span>
-                    <span class="user-email">carlos.sousa25@fatec.sp.gov.br</span>
+                    <span class="user-name" id="userName"></span>
+                    <span class="user-email" id="userEmail"></span>
                 </div>
                 <div class="profile-dropdown">
                     <img src="../../assets/images/default-avatar.png" alt="Foto do Professor" class="profile-avatar">
@@ -72,10 +72,10 @@
     <!-- Conteúdo Principal -->
     <main class="professor-content">
         <div class="welcome-banner">
-            <h1>Bem-vindo, Professor!</h1>
+            <h1>Bem-vindo, Professor <span id="welcomeName"></span>!</h1>
             <p>O que você precisa fazer hoje?</p>
         </div>
-        
+
         <div class="quick-actions">
             <!-- Card Criar Ordem -->
             <a href="criar-ordem.html" class="action-card">
@@ -86,58 +86,32 @@
                 <p>Registre um novo problema técnico</p>
                 <div class="card-badge">+ Novo</div>
             </a>
-            
-            <!-- Card Ordens Recentes -->
+
+            <!-- Card Minhas Ordens -->
             <a href="minhas-ordens.html" class="action-card">
                 <div class="card-icon" style="background-color: rgba(5, 13, 235, 0.1);">
                     <i class="fas fa-list-ul" style="color: #050deb;"></i>
                 </div>
                 <h3>Minhas Ordens</h3>
                 <p>Visualize seu histórico de solicitações</p>
-                <div class="card-badge">3 pendentes</div>
+                <div class="card-badge" id="badgePendentes">0</div>
             </a>
-            
-            <!-- Card Acompanhar -->
+
+            <!-- Card Acompanhamento -->
             <a href="minhas-ordens.html#andamento" class="action-card">
                 <div class="card-icon" style="background-color: rgba(255, 0, 226, 0.1);">
                     <i class="fas fa-tasks" style="color: #ff00e2;"></i>
                 </div>
                 <h3>Acompanhamento</h3>
                 <p>Verifique o status das suas ordens</p>
-                <div class="card-badge">2 em andamento</div>
+                <div class="card-badge" id="badgeAndamento">0</div>
             </a>
         </div>
-        
+
         <!-- Seção de Ordens Recentes -->
         <section class="recent-orders">
             <h2><i class="fas fa-history"></i> Ordens Recentes</h2>
-            <div class="orders-grid">
-                <div class="order-card status-pending">
-                    <div class="order-header">
-                        <span class="order-id">#ORD-2025-001</span>
-                        <span class="order-date">15/05/2025</span>
-                    </div>
-                    <h3>Problema no Projetor - Sala 103</h3>
-                    <p class="order-description">Projetor não está exibindo imagem corretamente</p>
-                    <div class="order-footer">
-                        <span class="order-status"><i class="fas fa-clock"></i> Pendente</span>
-                        <a href="minhas-ordens.html" class="order-details">Ver detalhes</a>
-                    </div>
-                </div>
-                
-                <div class="order-card status-in-progress">
-                    <div class="order-header">
-                        <span class="order-id">#ORD-2025-002</span>
-                        <span class="order-date">16/05/2025</span>
-                    </div>
-                    <h3>Computador não liga - Lab 205</h3>
-                    <p class="order-description">Posição 12 não está respondendo ao ligar</p>
-                    <div class="order-footer">
-                        <span class="order-status"><i class="fas fa-spinner"></i> Em Andamento</span>
-                        <a href="minhas-ordens.html" class="order-details">Ver detalhes</a>
-                    </div>
-                </div>
-            </div>
+            <div class="orders-grid" id="recentOrders"></div>
         </section>
     </main>
 
