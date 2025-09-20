@@ -6,6 +6,7 @@ import bcrypt from "bcrypt";
 import cors from "cors";
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
+import { MailerSend, EmailParams, Sender, Recipient } from "mailersend";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -28,6 +29,57 @@ const pool = new Pool({
 pool.connect()
   .then(() => console.log("Postgres OK ✅"))
   .catch(err => console.error("Erro Postgres ❌", err));
+
+// -------------------
+// Configuração MailerSend
+// -------------------
+const mailer = new MailerSend({
+  apiKey: process.env.MAILERSEND_API_KEY,
+});
+
+// Email administrador da trial (tem que ser o mesmo cadastrado no painel)
+const ADMIN_EMAIL = "conclusaovitoria@proton.me";
+
+// -------------------
+// Função utilitária para envio de email
+// -------------------
+async function enviarEmailRedefinirSenha(nome, email, token) {
+  // Trial só permite envio para o admin → sobrescrevemos destinatário
+  const destinatario = ADMIN_EMAIL;
+
+  // link que o usuário vai clicar → seu front deve tratar esse token
+  const link = `https://bdd339d3-9d30-4502-bb65-c2df41043c71-00-19kadynhvjmtz.spock.replit.dev/login.html?token=${token}`;
+
+
+  const from = new Sender(
+    "naoresponda@test-q3enl6kvmkr42vwr.mlsender.net", 
+    "Conclusão Vitória"
+  );
+
+  const recipients = [new Recipient(destinatario, nome)];
+
+  // Essas variáveis têm que bater com o que está no template do MailerSend
+  const personalization = [
+    {
+      email: destinatario,
+      data: {
+        name: nome,
+        account_name: "Conclusão Vitória",
+        action_url: link,
+        support_url: "mailto:suporte@seudominio.com"
+      },
+    },
+  ];
+
+  const emailParams = new EmailParams()
+    .setFrom(from)
+    .setTo(recipients)
+    .setSubject("Redefinição de senha") 
+    .setTemplateId("pr9084zyo18gw63d") // ID do template no MailerSend
+    .setPersonalization(personalization);
+
+  await mailer.email.send(emailParams);
+}
 
 // -------------------
 // Cadastro de usuário
@@ -99,7 +151,7 @@ app.post("/api/recuperar-senha", async (req, res) => {
       return res.status(400).json({ erro: "Email não cadastrado" });
 
     const token = crypto.randomBytes(20).toString("hex");
-    const expiraEm = new Date(Date.now() + 60 * 60 * 1000); // 1h
+    const expiraEm = new Date(Date.now() + 60 * 60 * 1000); // 1 hora
 
     await pool.query(
       `INSERT INTO resetSenha (user_id, token, expira_em, usado)
@@ -107,8 +159,9 @@ app.post("/api/recuperar-senha", async (req, res) => {
       [result.rows[0].id, token, expiraEm, false]
     );
 
-    console.log(`Link para redefinir senha: http://localhost:3000/redefinir-senha?token=${token}`);
-    res.json({ message: "Link de recuperação enviado!" });
+    await enviarEmailRedefinirSenha(result.rows[0].nome, email, token);
+
+    res.json({ message: "Link de recuperação enviado por email!" });
   } catch (err) {
     console.error(err);
     res.status(500).json({ erro: "Erro interno no servidor" });
@@ -132,15 +185,8 @@ app.post("/api/redefinir-senha", async (req, res) => {
     const userId = tokenResult.rows[0].user_id;
     const senhaHash = await bcrypt.hash(novaSenha, 10);
 
-    await pool.query(
-      `UPDATE users SET senha_hash = $1 WHERE id = $2`,
-      [senhaHash, userId]
-    );
-
-    await pool.query(
-      `UPDATE resetSenha SET usado = true WHERE id = $1`,
-      [tokenResult.rows[0].id]
-    );
+    await pool.query(`UPDATE users SET senha_hash = $1 WHERE id = $2`, [senhaHash, userId]);
+    await pool.query(`UPDATE resetSenha SET usado = true WHERE id = $1`, [tokenResult.rows[0].id]);
 
     res.json({ message: "Senha redefinida com sucesso!" });
   } catch (err) {
@@ -150,7 +196,7 @@ app.post("/api/redefinir-senha", async (req, res) => {
 });
 
 // -------------------
-// Middleware de autenticação JWT
+// Middleware JWT
 // -------------------
 function autenticarJWT(req, res, next) {
   const authHeader = req.headers.authorization;
@@ -165,7 +211,7 @@ function autenticarJWT(req, res, next) {
 }
 
 // -------------------
-// Rota para buscar ordens do professor logado
+// Rota para buscar ordens
 // -------------------
 app.get("/api/ordens", autenticarJWT, async (req, res) => {
   try {

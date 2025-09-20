@@ -87,7 +87,7 @@ document.addEventListener("DOMContentLoaded", function () {
                   .then(async (response) => {
                       if (!response.ok) {
                           const error = await response.json();
-                          throw new Error(error.message || "Erro no servidor");
+                          throw new Error(error.erro || "Erro no servidor");
                       }
                       return response.json();
                   })
@@ -156,10 +156,12 @@ document.addEventListener("DOMContentLoaded", function () {
   function validateForm() {
       let isValid = true;
       const emailInput = document.getElementById("email");
+      const emailValue = emailInput.value;
 
-      if (emailInput && !emailInput.value.endsWith("@fatec.sp.gov.br")) {
+      // Permite emails institucionais ou email de exceção
+      if (emailInput && !(emailValue.endsWith("@fatec.sp.gov.br") || emailValue === "conclusaovitoria@proton.me")) {
           emailInput.classList.add("invalid");
-          alert("Por favor, use seu email institucional (@fatec.sp.gov.br)");
+          alert("Por favor, use seu email institucional (@fatec.sp.gov.br) ou o email de teste");
           isValid = false;
       }
 

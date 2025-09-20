@@ -28,7 +28,7 @@
                 <h1>LOGIN</h1>
                 <p>Acesse sua conta para gerenciar ordens de serviço</p>
             </div>
-            
+
             <div class="user-type-toggle">
                 <button class="type-btn active" data-type="professor">
                     <i class="fas fa-chalkboard-teacher"></i> Professor
@@ -74,15 +74,16 @@
         </div>
     </main>
 
-    <!-- Modal de Recuperação de Senha -->
+    <!-- Modal de Recuperação/Redefinição de Senha -->
     <div class="modal-overlay" id="recoveryModal">
         <div class="modal-card">
             <button class="modal-close">&times;</button>
             <div class="modal-header">
                 <h2>Recuperar Senha</h2>
-                <p>Digite seu email institucional para receber o link de recuperação</p>
+                <p id="modalSubtitle">Digite seu email institucional para receber o link de recuperação</p>
             </div>
-            
+
+            <!-- Form normal para solicitar link -->
             <form id="recoveryForm" class="auth-form">
                 <div class="form-group">
                     <label for="recoveryEmail">Email Institucional</label>
@@ -93,12 +94,28 @@
                                pattern="[a-z0-9._%+-]+@fatec\.sp\.gov\.br$">
                     </div>
                 </div>
-                
+
                 <div id="recoveryFeedback"></div>
-                
+
                 <button type="submit" class="btn-auth">
                     <span>Enviar Link</span>
                     <i class="fas fa-paper-plane"></i>
+                </button>
+            </form>
+
+            <!-- Form de redefinir senha (aparece apenas com token) -->
+            <form id="resetForm" class="auth-form" style="display:none;">
+                <div class="form-group">
+                    <label for="newPassword">Nova Senha</label>
+                    <input type="password" id="newPassword" name="newPassword" required placeholder="Nova senha">
+                </div>
+                <div class="form-group">
+                    <label for="confirmPassword">Confirme a Senha</label>
+                    <input type="password" id="confirmPassword" name="confirmPassword" required placeholder="Confirme a senha">
+                </div>
+                <div id="resetFeedback"></div>
+                <button type="submit" class="btn-auth">
+                    <span>Redefinir Senha</span>
                 </button>
             </form>
         </div>
@@ -114,6 +131,7 @@
             </div>
         </div>
     </footer>
+
     <script src="assets/js/global.js"></script>
     <script src="assets/js/login.js"></script>
 </body>

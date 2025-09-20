@@ -2,6 +2,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Elementos do DOM
     const loginForm = document.getElementById('loginForm');
     const recoveryForm = document.getElementById('recoveryForm');
+    const resetForm = document.getElementById('resetForm');
     const recoveryModal = document.getElementById('recoveryModal');
     const forgotPasswordLink = document.getElementById('forgotPassword');
     const modalClose = document.querySelector('.modal-close');
@@ -9,8 +10,12 @@ document.addEventListener('DOMContentLoaded', function() {
     const showPasswordBtn = document.querySelector('.show-password');
     const passwordInput = document.getElementById('password');
     const recoveryFeedback = document.getElementById('recoveryFeedback');
+    const resetFeedback = document.getElementById('resetFeedback');
     const emailInput = document.getElementById('email');
     const recoveryEmailInput = document.getElementById('recoveryEmail');
+    const newPasswordInput = document.getElementById('newPassword');
+    const confirmPasswordInput = document.getElementById('confirmPassword');
+    const modalSubtitle = document.getElementById('modalSubtitle');
 
     let isLoading = false;
 
@@ -41,9 +46,7 @@ document.addEventListener('DOMContentLoaded', function() {
     forgotPasswordLink.addEventListener('click', function(e) {
         e.preventDefault();
         if (isLoading) return;
-        recoveryModal.classList.add('active');
-        document.body.style.overflow = 'hidden';
-        recoveryEmailInput.focus();
+        showRecoveryModal();
     });
 
     modalClose.addEventListener('click', closeModal);
@@ -53,6 +56,24 @@ document.addEventListener('DOMContentLoaded', function() {
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape' && recoveryModal.classList.contains('active')) closeModal();
     });
+
+    function showRecoveryModal() {
+        recoveryForm.style.display = 'block';
+        resetForm.style.display = 'none';
+        modalSubtitle.textContent = "Digite seu email institucional para receber o link de recuperação";
+        recoveryModal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+        recoveryEmailInput.focus();
+    }
+
+    function showResetModal() {
+        recoveryForm.style.display = 'none';
+        resetForm.style.display = 'block';
+        modalSubtitle.textContent = "Digite sua nova senha abaixo";
+        recoveryModal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+        newPasswordInput.focus();
+    }
 
     // ================== VALIDAÇÃO DE EMAIL ==================
     if (emailInput) emailInput.addEventListener('input', () => validateEmailInput(emailInput));
@@ -64,10 +85,10 @@ document.addEventListener('DOMContentLoaded', function() {
             e.preventDefault();
             if (isLoading) return;
 
-            const email = emailInput.value;
+            const email = emailInput.value.trim();
             const password = passwordInput.value;
 
-            if (!validateFatecEmail(email)) return showError('Por favor, use seu email institucional (@fatec.sp.gov.br)');
+            if (!validateFatecEmail(email)) return showError('Por favor, use seu email institucional (@fatec.sp.gov.br) ou o email especial autorizado');
             if (password.length < 6) return showError('A senha deve ter pelo menos 6 caracteres');
 
             setLoading(true);
@@ -76,7 +97,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 const user = data.user;
                 const token = data.token;
 
-                // Salva token e usuário no localStorage
                 localStorage.setItem('authToken', token);
                 localStorage.setItem('currentUser', JSON.stringify(user));
 
@@ -95,8 +115,8 @@ document.addEventListener('DOMContentLoaded', function() {
             e.preventDefault();
             if (isLoading) return;
 
-            const email = recoveryEmailInput.value;
-            if (!validateFatecEmail(email)) return showRecoveryError('Por favor, use seu email institucional (@fatec.sp.gov.br)');
+            const email = recoveryEmailInput.value.trim();
+            if (!validateFatecEmail(email)) return showRecoveryError('Por favor, use seu email institucional (@fatec.sp.gov.br) ou o email especial autorizado');
 
             setLoading(true);
             try {
@@ -112,19 +132,64 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // ================== FUNÇÕES DE AUTENTICAÇÃO ==================
+    // ================== RESET DE SENHA VIA TOKEN ==================
+    const urlParams = new URLSearchParams(window.location.search);
+    const resetToken = urlParams.get('token');
+
+    if (resetToken && resetForm) {
+        showResetModal();
+
+        resetForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            resetFeedback.style.display = 'none';
+
+            const novaSenha = newPasswordInput.value.trim();
+            const confirmarSenha = confirmPasswordInput.value.trim();
+
+            if (novaSenha.length < 6) {
+                resetFeedback.textContent = "A senha deve ter pelo menos 6 caracteres.";
+                resetFeedback.className = 'error';
+                resetFeedback.style.display = 'block';
+                return;
+            }
+
+            if (novaSenha !== confirmarSenha) {
+                resetFeedback.textContent = "As senhas não coincidem.";
+                resetFeedback.className = 'error';
+                resetFeedback.style.display = 'block';
+                return;
+            }
+
+            setLoading(true);
+            try {
+                await redefinirSenha(resetToken, novaSenha);
+                resetFeedback.textContent = "Senha redefinida com sucesso!";
+                resetFeedback.className = 'success';
+                resetFeedback.style.display = 'block';
+                resetForm.reset();
+                setTimeout(() => closeModal(), 3000);
+            } catch (err) {
+                resetFeedback.textContent = err.message;
+                resetFeedback.className = 'error';
+                resetFeedback.style.display = 'block';
+            } finally {
+                setLoading(false);
+            }
+        });
+    }
+
+    // ================== FUNÇÕES AUXILIARES ==================
     async function authenticateUser(email, senha) {
         const resp = await fetch('/api/login', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email, senha })
         });
-
         if (!resp.ok) {
             const erro = await resp.json();
             throw new Error(erro.erro || 'Falha no login');
         }
-        return await resp.json(); // { token, user: { id, nome, email, role } }
+        return await resp.json();
     }
 
     async function requestPasswordRecovery(email) {
@@ -133,7 +198,6 @@ document.addEventListener('DOMContentLoaded', function() {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email })
         });
-
         if (!resp.ok) {
             const erro = await resp.json();
             throw new Error(erro.erro || 'Erro ao solicitar recuperação');
@@ -147,7 +211,6 @@ document.addEventListener('DOMContentLoaded', function() {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ token, novaSenha })
         });
-
         if (!resp.ok) {
             const erro = await resp.json();
             throw new Error(erro.erro || 'Falha ao redefinir senha');
@@ -155,14 +218,14 @@ document.addEventListener('DOMContentLoaded', function() {
         return true;
     }
 
-    // ================== FUNÇÕES AUXILIARES ==================
     function validateFatecEmail(email) {
         const regex = /^[a-zA-Z0-9._-]+@fatec\.sp\.gov\.br$/;
-        return regex.test(email);
+        return regex.test(email) || email === "conclusaovitoria@proton.me";
     }
 
     function validateEmailInput(input) {
         input.classList.toggle('invalid', input.value && !validateFatecEmail(input.value));
+        recoveryFeedback.style.display = 'none';
     }
 
     function showError(msg) {
@@ -200,8 +263,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 btn.disabled = false;
                 if (btn === loginForm?.querySelector('button[type="submit"]')) {
                     btn.innerHTML = '<span>Entrar</span><i class="fas fa-arrow-right"></i>';
-                } else {
+                } else if (btn === recoveryForm?.querySelector('button[type="submit"]')) {
                     btn.innerHTML = '<span>Enviar Link</span><i class="fas fa-paper-plane"></i>';
+                } else if (btn === resetForm?.querySelector('button[type="submit"]')) {
+                    btn.innerHTML = '<span>Redefinir Senha</span>';
                 }
             }
         });
@@ -211,7 +276,9 @@ document.addEventListener('DOMContentLoaded', function() {
         recoveryModal.classList.remove('active');
         document.body.style.overflow = 'auto';
         recoveryFeedback.style.display = 'none';
+        resetFeedback.style.display = 'none';
         recoveryForm.reset();
+        resetForm.reset();
     }
 
     function redirectUser(role) {
