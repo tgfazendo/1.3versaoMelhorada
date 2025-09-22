@@ -17,14 +17,14 @@
             <button class="menu-toggle" aria-label="Abrir menu">
                 <i class="fas fa-bars"></i>
             </button>
-            
+
             <a href="painel-professor.html" class="logo-link">
                 <div class="logo-container">
                     <img src="../../assets/images/logo.png" alt="Support Nexus" class="logo">
                     <span class="logo-text">Support Nexus</span>
                 </div>
             </a>
-            
+
             <div class="user-profile">
                 <div class="profile-info">
                     <span class="user-name">Prof. Carlos</span>
@@ -168,7 +168,7 @@
                         </select>
                     </div>
 
-                    <div class="form-group">
+                    <div class="form-group" id="position-group">
                         <label for="position">Posição (Opcional)</label>
                         <input type="text" id="position" name="position" placeholder="Ex: Posição 12">
                     </div>
@@ -187,12 +187,11 @@
             <!-- Seção de Problema -->
             <div id="problem-section" class="form-section">
                 <h2><i class="fas fa-exclamation-triangle"></i> Detalhes do Problema</h2>
-                
+
                 <div class="form-group">
                     <label for="equipment-type">Equipamento*</label>
                     <select id="equipment-type" name="equipment-type" required>
                         <option value="">Selecione o equipamento...</option>
-                        <!-- Preenchido dinamicamente via JS -->
                     </select>
                 </div>
 
@@ -200,7 +199,6 @@
                     <label for="problem-type">Tipo de Problema*</label>
                     <select id="problem-type" name="problem-type" required>
                         <option value="">Selecione o tipo de problema...</option>
-                        <!-- Preenchido dinamicamente via JS -->
                     </select>
                 </div>
 
@@ -213,7 +211,7 @@
             <!-- Seção de Instalação -->
             <div id="installation-section" class="form-section" style="display:none;">
                 <h2><i class="fas fa-download"></i> Detalhes da Instalação</h2>
-                
+
                 <div class="form-group">
                     <label for="app-name">Nome do Aplicativo*</label>
                     <input type="text" id="app-name" name="app-name" placeholder="Ex: Visual Studio Code">

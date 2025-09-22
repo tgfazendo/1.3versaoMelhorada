@@ -1,6 +1,17 @@
 document.addEventListener('DOMContentLoaded', function() {
     // -------------------
-    // Elementos do DOM
+    // Autenticação
+    // -------------------
+    const token = localStorage.getItem("authToken");
+    const user = JSON.parse(localStorage.getItem("currentUser"));
+
+    if (!token || !user) {
+        window.location.href = "../../login.html";
+        return;
+    }
+
+    // -------------------
+    // Elementos DOM
     // -------------------
     const menuToggle = document.querySelector('.menu-toggle');
     const sidebar = document.querySelector('.sidebar');
@@ -8,8 +19,27 @@ document.addEventListener('DOMContentLoaded', function() {
     overlay.className = 'overlay';
     document.body.appendChild(overlay);
 
+    const userNameEl = document.getElementById("userName");
+    const userEmailEl = document.getElementById("userEmail");
+    const welcomeNameEl = document.getElementById("welcomeName");
+    const cardPendentes = document.getElementById("cardPendentes");
+    const cardAndamento = document.getElementById("cardAndamento");
+    const cardMinhas = document.getElementById("cardMinhas");
+    const cardConcluidas = document.getElementById("cardConcluidas");
+    const recentOrdersContainer = document.getElementById('recentOrders');
+
+    // Filtros
+    const filtroStatus = document.getElementById('filtroStatus');
+    const filtroBusca = document.getElementById('filtroBusca');
+    const filtroData = document.getElementById('filtroData');
+
+    // Modal de detalhes
+    const detalhesModal = document.getElementById('detalhesModal');
+    const modalContent = document.getElementById('modalContent');
+    const modalClose = document.getElementById('modalClose');
+
     // -------------------
-    // Controle do menu mobile
+    // Menu lateral
     // -------------------
     menuToggle.addEventListener('click', () => {
         sidebar.classList.toggle('active');
@@ -22,19 +52,24 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // -------------------
+    // Preencher dados do usuário
+    // -------------------
+    userNameEl.textContent = user.nome;
+    userEmailEl.textContent = user.email;
+    welcomeNameEl.textContent = user.nome;
+
+    // -------------------
     // Dropdown do perfil
     // -------------------
     let dropdownVisible = false;
-    const profileToggle = document.getElementById('profile-toggle');
-    const profileDropdown = document.getElementById('profile-dropdown');
+    const profileDropdown = document.querySelector('.profile-dropdown .dropdown-content');
+    const profileAvatar = document.getElementById("userAvatar");
 
-    if (profileToggle && profileDropdown) {
-        profileToggle.addEventListener('click', (e) => {
-            e.stopPropagation();
-            dropdownVisible = !dropdownVisible;
-            profileDropdown.style.display = dropdownVisible ? 'block' : 'none';
-        });
-    }
+    profileAvatar.addEventListener('click', (e) => {
+        e.stopPropagation();
+        dropdownVisible = !dropdownVisible;
+        profileDropdown.style.display = dropdownVisible ? 'block' : 'none';
+    });
 
     document.addEventListener('click', () => {
         if (dropdownVisible) {
@@ -44,151 +79,272 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // -------------------
-    // Carregar dados do Dashboard
+    // Logout
     // -------------------
+    document.getElementById("logout")?.addEventListener("click", () => {
+        localStorage.removeItem("authToken");
+        localStorage.removeItem("currentUser");
+    });
+
+    // -------------------
+    // Carregar dados do dashboard
+    // -------------------
+    let ordensCache = [];
+
     async function loadDashboardData() {
         try {
-            // Trocar pela sua rota real da API
-            const response = await fetch("/api/suporte/dashboard");
-            const data = await response.json();
+            const res = await fetch("/api/ordens/suporte", {
+                headers: { "Authorization": "Bearer " + token }
+            });
 
-            // Se não tiver API, usa valores mock
-            const dashboardData = data || {
-                pending: 15,
-                inProgress: 8,
-                assigned: 5,
-                completed: 24,
-                recentOrders: [
-                    { id: 101, titulo: "Problema no projetor", status: "pending", data: "2025-09-10" },
-                    { id: 102, titulo: "Internet lenta", status: "in-progress", data: "2025-09-11" },
-                    { id: 103, titulo: "Troca de teclado", status: "completed", data: "2025-09-12" }
-                ]
-            };
+            const text = await res.text();
+            console.log("=== Carregar Ordens ===");
+            console.log("Status:", res.status);
+            console.log("Resposta:", text);
 
-            // Atualizar os cards
-            document.querySelector('.summary-card.pending .card-value').textContent = dashboardData.pending;
-            document.querySelector('.summary-card.in-progress .card-value').textContent = dashboardData.inProgress;
-            document.querySelector('.summary-card.assigned .card-value').textContent = dashboardData.assigned;
-            document.querySelector('.summary-card.completed .card-value').textContent = dashboardData.completed;
+            const ordens = JSON.parse(text);
+            ordensCache = ordens;
 
-            // Renderizar ordens recentes
-            renderRecentOrders(dashboardData.recentOrders);
+            atualizarCards(ordens);
+            renderRecentOrders(ordens);
 
         } catch (err) {
-            console.error("Erro ao carregar dados do dashboard:", err);
+            console.error("Erro ao carregar dashboard:", err);
         }
     }
 
-    // -------------------
-    // Renderizar Ordens Recentes
-    // -------------------
-    function renderRecentOrders(orders) {
-        const container = document.getElementById('recentOrders');
-        if (!container) return;
+    function atualizarCards(ordens) {
+        cardPendentes.textContent = ordens.filter(o => o.status === "Aberta").length;
+        cardAndamento.textContent = ordens.filter(o => o.status === "Em Andamento").length;
+        cardMinhas.textContent = ordens.filter(o => o.responsavel_id === user.id).length;
+        cardConcluidas.textContent = ordens.filter(o => o.status === "Finalizada").length;
+    }
 
-        container.innerHTML = ""; // limpar antes de renderizar
+    function renderRecentOrders(ordens) {
+        if (!recentOrdersContainer) return;
+        recentOrdersContainer.innerHTML = "";
 
-        orders.forEach(order => {
+        if (ordens.length === 0) {
+            recentOrdersContainer.innerHTML = "<p>Nenhuma ordem encontrada.</p>";
+            return;
+        }
+
+        ordens.forEach(order => {
             const orderCard = document.createElement('div');
-            orderCard.className = `order-card ${order.status}`;
+            const statusClass = order.status.replace(/\s/g, '-').toLowerCase(); // em-andamento, finalizada, aberta
+            orderCard.className = `order-card ${statusClass}`;
+            orderCard.dataset.id = order.id;
+
+            const assignedInfo = order.responsavel_id 
+                ? `<span><i class="fas fa-user-cog"></i> Responsável: ${order.responsavel_nome || 'Suporte'}</span>` 
+                : '';
+
+            const detalheProblema = order.tipo_solicitacao === 'problema' 
+                ? `<p><strong>Equipamento:</strong> ${order.equipamento || '-'} | <strong>Problema:</strong> ${order.tipo_problema || '-'}</p>` 
+                : '';
+
+            const detalheInstalacao = order.tipo_solicitacao === 'instalacao' 
+                ? `<p><strong>App:</strong> ${order.app_nome || '-'} | <strong>Versão:</strong> ${order.app_versao || '-'} | <strong>Link:</strong> ${order.app_link || '-'}</p>` 
+                : '';
 
             orderCard.innerHTML = `
                 <div class="order-header">
                     <span class="order-id">#${order.id}</span>
-                    <span class="order-status ${order.status}">
-                        ${getStatusHTML(order.status)}
-                    </span>
+                    <span class="order-status ${statusClass}">${getStatusHTML(order.status)}</span>
                 </div>
                 <div class="order-body">
-                    <h3>${order.titulo}</h3>
-                    <p>Data: ${order.data}</p>
+                    <h3>${order.descricao}</h3>
+                    <p>Data: ${new Date(order.data_criacao).toLocaleString()}</p>
+                    ${assignedInfo}
+                    ${detalheProblema}
+                    ${detalheInstalacao}
                 </div>
                 <div class="order-footer">
-                    ${getButtonsHTML(order.status)}
+                    ${getButtonsHTML(order)}
                 </div>
             `;
-
-            container.appendChild(orderCard);
+            recentOrdersContainer.appendChild(orderCard);
         });
 
         bindOrderButtons();
     }
 
-    // -------------------
-    // Status HTML
-    // -------------------
     function getStatusHTML(status) {
         switch (status) {
-            case "pending": return '<i class="fas fa-clock"></i> Pendente';
-            case "in-progress": return '<i class="fas fa-spinner"></i> Em Andamento';
-            case "assigned": return '<i class="fas fa-user-cog"></i> Atribuída';
-            case "completed": return '<i class="fas fa-check"></i> Concluída';
+            case "Aberta": return '<i class="fas fa-clock"></i> Aberta';
+            case "Em Andamento": return '<i class="fas fa-spinner"></i> Em Andamento';
+            case "Finalizada": return '<i class="fas fa-check"></i> Finalizada';
             default: return '<i class="fas fa-question"></i> Desconhecido';
         }
     }
 
-    // -------------------
-    // Botões por status
-    // -------------------
-    function getButtonsHTML(status) {
-        if (status === "pending") {
-            return `<button class="btn btn-assign"><i class="fas fa-user-plus"></i> Assumir</button>`;
+    function getButtonsHTML(order) {
+        let buttons = "";
+
+        if (order.status === "Aberta" && !order.responsavel_id) {
+            buttons += `<button class="btn btn-assign"><i class="fas fa-user-plus"></i> Assumir</button>`;
         }
-        if (status === "in-progress" || status === "assigned") {
-            return `<button class="btn btn-update"><i class="fas fa-edit"></i> Atualizar</button>`;
+
+        if (order.status === "Em Andamento" && order.responsavel_id === user.id) {
+            buttons += `<button class="btn btn-finalize"><i class="fas fa-check"></i> Finalizar</button>`;
         }
-        return `<button class="btn btn-details"><i class="fas fa-eye"></i> Detalhes</button>`;
+
+        buttons += `<button class="btn btn-details"><i class="fas fa-eye"></i> Detalhes</button>`;
+        return buttons;
     }
 
-    // -------------------
-    // Eventos dos Botões
-    // -------------------
     function bindOrderButtons() {
-        // Botão Assumir
+        // -------------------
+        // Assumir ordem
+        // -------------------
         document.querySelectorAll('.btn-assign').forEach(btn => {
-            btn.addEventListener('click', function() {
+            btn.addEventListener('click', async function() {
                 const orderCard = this.closest('.order-card');
-                const orderId = orderCard.querySelector('.order-id').textContent;
-
-                console.log(`Assumindo ordem ${orderId}`);
+                const orderId = orderCard.dataset.id;
                 this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processando...';
 
-                setTimeout(() => {
-                    this.outerHTML = `<button class="btn btn-update"><i class="fas fa-edit"></i> Atualizar</button>`;
-                    orderCard.classList.remove('pending');
-                    orderCard.classList.add('in-progress');
-                    orderCard.querySelector('.order-status').className = 'order-status in-progress';
-                    orderCard.querySelector('.order-status').innerHTML = '<i class="fas fa-spinner"></i> Em Andamento';
+                try {
+                    const res = await fetch(`/api/ordens/${orderId}/accept`, {
+                        method: 'PATCH',
+                        headers: {
+                            "Authorization": "Bearer " + token,
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({ userId: user.id })
+                    });
 
-                    // Adicionar responsável
-                    const meta = document.createElement('span');
-                    meta.innerHTML = '<i class="fas fa-user-cog"></i> Você está responsável';
-                    orderCard.querySelector('.order-body').appendChild(meta);
+                    const data = await res.json();
+                    console.log("=== Assumir Ordem ===");
+                    console.log("Status:", res.status);
+                    console.log("Resposta:", data);
 
-                    bindOrderButtons(); // reatribuir eventos
-                }, 1000);
+                    if (!res.ok) throw new Error("Falha ao assumir ordem");
+
+                    // Remove classes antigas e adiciona nova
+                    orderCard.classList.remove("aberta", "em-andamento", "finalizada");
+                    orderCard.classList.add("em-andamento");
+
+                    const statusEl = orderCard.querySelector(".order-status");
+                    if (statusEl) statusEl.innerHTML = getStatusHTML("Em Andamento");
+
+                    // Responsável
+                    const bodyEl = orderCard.querySelector(".order-body");
+                    if (bodyEl) {
+                        const span = document.createElement("span");
+                        const icon = document.createElement("i");
+                        icon.className = "fas fa-user-cog";
+                        span.appendChild(icon);
+                        span.appendChild(document.createTextNode(` Responsável: ${user.nome}`));
+                        bodyEl.appendChild(span);
+                    }
+
+                    this.remove();
+
+                } catch(err) {
+                    console.error(err);
+                    alert("Não foi possível assumir a ordem.");
+                    this.innerHTML = '<i class="fas fa-user-plus"></i> Assumir';
+                }
             });
         });
 
-        // Botão Atualizar
-        document.querySelectorAll('.btn-update').forEach(btn => {
-            btn.addEventListener('click', function() {
+        // -------------------
+        // Finalizar ordem
+        // -------------------
+        document.querySelectorAll('.btn-finalize').forEach(btn => {
+            btn.addEventListener('click', async function() {
                 const orderCard = this.closest('.order-card');
-                const orderId = orderCard.querySelector('.order-id').textContent;
-                window.location.href = `ordens/editar-ordem.html?id=${orderId.slice(1)}`;
+                const orderId = orderCard.dataset.id;
+                this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Finalizando...';
+
+                try {
+                    const res = await fetch(`/api/ordens/${orderId}/status`, {
+                        method: 'PATCH',
+                        headers: {
+                            "Authorization": "Bearer " + token,
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({ status: "Finalizada" })
+                    });
+
+                    const data = await res.json();
+                    console.log("=== Finalizar Ordem ===");
+                    console.log("Status:", res.status);
+                    console.log("Resposta:", data);
+
+                    if (!res.ok) throw new Error("Falha ao finalizar ordem");
+
+                    orderCard.classList.remove("aberta", "em-andamento", "finalizada");
+                    orderCard.classList.add("finalizada");
+
+                    const statusEl = orderCard.querySelector(".order-status");
+                    if (statusEl) statusEl.innerHTML = getStatusHTML("Finalizada");
+
+                    this.remove();
+                } catch(err) {
+                    console.error(err);
+                    alert("Não foi possível finalizar a ordem.");
+                    this.innerHTML = '<i class="fas fa-check"></i> Finalizar';
+                }
             });
         });
 
-        // Botão Detalhes
+        // -------------------
+        // Detalhes
+        // -------------------
         document.querySelectorAll('.btn-details').forEach(btn => {
             btn.addEventListener('click', function() {
-                const orderCard = this.closest('.order-card');
-                const orderId = orderCard.querySelector('.order-id').textContent;
-                window.location.href = `ordens/detalhes-ordem.html?id=${orderId.slice(1)}`;
+                const orderId = this.closest('.order-card').dataset.id;
+                const order = ordensCache.find(o => o.id == orderId);
+                if (!order) return;
+
+                modalContent.innerHTML = `
+                    <h3>Ordem #${order.id}</h3>
+                    <p><strong>Descrição:</strong> ${order.descricao}</p>
+                    <p><strong>Status:</strong> ${getStatusHTML(order.status)}</p>
+                    <p><strong>Tipo:</strong> ${order.tipo_solicitacao}</p>
+                    <p><strong>Local:</strong> ${order.local_tipo} - ${order.local_detalhe || '-'}</p>
+                    <p><strong>Responsável:</strong> ${order.responsavel_nome || '-'}</p>
+                    ${order.tipo_solicitacao === 'problema' ? `<p><strong>Equipamento:</strong> ${order.equipamento || '-'} | <strong>Problema:</strong> ${order.tipo_problema || '-'}</p>` : ''}
+                    ${order.tipo_solicitacao === 'instalacao' ? `<p><strong>App:</strong> ${order.app_nome || '-'} | <strong>Versão:</strong> ${order.app_versao || '-'} | <strong>Link:</strong> ${order.app_link || '-'}</p>` : ''}
+                `;
+                detalhesModal.style.display = 'block';
             });
         });
     }
 
+    // -------------------
+    // Fechar modal
+    // -------------------
+    modalClose?.addEventListener('click', () => {
+        detalhesModal.style.display = 'none';
+    });
+
+    window.addEventListener('click', (e) => {
+        if (e.target === detalhesModal) {
+            detalhesModal.style.display = 'none';
+        }
+    });
+
+    // -------------------
+    // Filtros
+    // -------------------
+    filtroStatus?.addEventListener('change', aplicarFiltros);
+    filtroBusca?.addEventListener('input', aplicarFiltros);
+    filtroData?.addEventListener('change', aplicarFiltros);
+
+    function aplicarFiltros() {
+        let filtered = [...ordensCache];
+        const status = filtroStatus?.value;
+        const busca = filtroBusca?.value.toLowerCase();
+        const data = filtroData?.value;
+
+        if (status && status !== 'Todos') filtered = filtered.filter(o => o.status === status);
+        if (busca) filtered = filtered.filter(o => o.descricao.toLowerCase().includes(busca));
+        if (data) filtered = filtered.filter(o => new Date(o.data_criacao).toISOString().slice(0,10) === data);
+
+        renderRecentOrders(filtered);
+    }
     // -------------------
     // Inicialização
     // -------------------

@@ -1,3 +1,4 @@
+// professor.js
 document.addEventListener('DOMContentLoaded', function() {
     // =========================
     // Inicialização
@@ -10,7 +11,9 @@ document.addEventListener('DOMContentLoaded', function() {
         return;
     }
 
+    // =========================
     // Elementos do DOM
+    // =========================
     const sidebar = document.querySelector('.sidebar');
     const menuToggle = document.querySelector('.menu-toggle');
     const overlay = createOverlay();
@@ -25,7 +28,6 @@ document.addEventListener('DOMContentLoaded', function() {
     // =========================
     // Funções de interface
     // =========================
-
     function createOverlay() {
         const div = document.createElement('div');
         div.className = 'overlay';
@@ -34,25 +36,26 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function toggleSidebar() {
-        sidebar.classList.toggle('active');
-        overlay.classList.toggle('active');
+        sidebar?.classList.toggle('active');
+        overlay?.classList.toggle('active');
     }
 
     function closeSidebar() {
-        sidebar.classList.remove('active');
-        overlay.classList.remove('active');
+        sidebar?.classList.remove('active');
+        overlay?.classList.remove('active');
     }
 
     function setupMenu() {
-        menuToggle.addEventListener('click', toggleSidebar);
-        overlay.addEventListener('click', closeSidebar);
+        menuToggle?.addEventListener('click', toggleSidebar);
+        overlay?.addEventListener('click', closeSidebar);
     }
 
     function setupProfileDropdown() {
-        let dropdownVisible = false;
         const avatar = document.querySelector('.profile-avatar');
         const dropdown = document.querySelector('.dropdown-content');
+        if (!avatar || !dropdown) return;
 
+        let dropdownVisible = false;
         avatar.addEventListener('click', (e) => {
             e.stopPropagation();
             dropdownVisible = !dropdownVisible;
@@ -83,10 +86,10 @@ document.addEventListener('DOMContentLoaded', function() {
     // =========================
     // Funções de dados
     // =========================
-
     async function fetchOrdens() {
+        if (!recentOrdersEl) return;
         try {
-            const res = await fetch("/api/ordens", {
+            const res = await fetch("/api/minhas-ordens", {
                 headers: { "Authorization": "Bearer " + token }
             });
             if (!res.ok) throw new Error("Falha ao carregar ordens");
@@ -95,7 +98,7 @@ document.addEventListener('DOMContentLoaded', function() {
             renderOrdens(ordens);
         } catch (err) {
             console.error(err);
-            if (recentOrdersEl) recentOrdersEl.innerHTML = "<p>Erro ao carregar ordens.</p>";
+            recentOrdersEl.innerHTML = "<p>Erro ao carregar ordens.</p>";
         }
     }
 
@@ -108,19 +111,34 @@ document.addEventListener('DOMContentLoaded', function() {
 
         ordens.forEach(o => {
             const div = document.createElement("div");
-            div.className = "order-card";
-            div.innerHTML = `
-                <h3>${o.codigo} - ${o.titulo}</h3>
-                <p>${o.descricao}</p>
-                <span class="status ${o.status}">${o.statusNome}</span>
-                <span class="date">${o.data}</span>
-            `;
-            recentOrdersEl.appendChild(div);
+            // Classe CSS baseada no status
+            let statusClass = "";
+            switch(o.status) {
+                case "Aberta": statusClass = "aberta"; pendentes++; break;
+                case "Em Andamento": statusClass = "em-andamento"; andamento++; break;
+                case "Finalizada": statusClass = "finalizada"; break;
+                default: statusClass = "desconhecido"; break;
+            }
 
-            if (o.status === "pending") pendentes++;
-            if (o.status === "in-progress") andamento++;
+            // Construir descrição
+            const descricao = o.descricao || (o.app_nome ? `${o.app_nome} ${o.app_versao || ''}` : '');
+            const detalhesProblema = o.equipamento ? `${o.equipamento} - ${o.tipo_problema}` : '';
+            const anexos = o.anexos ? o.anexos.map(a => `<li>${a.arquivo_nome}</li>`).join('') : '';
+
+            div.className = `order-card ${statusClass}`;
+            div.innerHTML = `
+                <h3>${o.codigo || o.id} - ${o.tipo_solicitacao.toUpperCase()}</h3>
+                <p>${descricao}</p>
+                <p>${detalhesProblema}</p>
+                ${anexos ? `<ul>${anexos}</ul>` : ''}
+                <span class="status ${statusClass}">${o.status}</span>
+                <span class="date">${new Date(o.data_criacao).toLocaleString()}</span>
+            `;
+
+            recentOrdersEl.appendChild(div);
         });
 
+        // Atualizar badges
         if (badgePendentesEl) badgePendentesEl.textContent = pendentes;
         if (badgeAndamentoEl) badgeAndamentoEl.textContent = andamento;
     }

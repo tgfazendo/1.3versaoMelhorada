@@ -101,9 +101,7 @@
                         Ver todas <i class="fas fa-arrow-right"></i>
                     </a>
                 </div>
-                <div class="card-icon">
-                    <i class="fas fa-clock"></i>
-                </div>
+                <div class="card-icon"><i class="fas fa-clock"></i></div>
             </div>
 
             <div class="summary-card in-progress">
@@ -114,9 +112,7 @@
                         Ver todas <i class="fas fa-arrow-right"></i>
                     </a>
                 </div>
-                <div class="card-icon">
-                    <i class="fas fa-spinner"></i>
-                </div>
+                <div class="card-icon"><i class="fas fa-spinner"></i></div>
             </div>
 
             <div class="summary-card assigned">
@@ -127,9 +123,7 @@
                         Ver minhas <i class="fas fa-arrow-right"></i>
                     </a>
                 </div>
-                <div class="card-icon">
-                    <i class="fas fa-user-cog"></i>
-                </div>
+                <div class="card-icon"><i class="fas fa-user-cog"></i></div>
             </div>
 
             <div class="summary-card completed">
@@ -140,10 +134,26 @@
                         Ver todas <i class="fas fa-arrow-right"></i>
                     </a>
                 </div>
-                <div class="card-icon">
-                    <i class="fas fa-check-circle"></i>
-                </div>
+                <div class="card-icon"><i class="fas fa-check-circle"></i></div>
             </div>
+        </div>
+
+        <!-- Filtros -->
+        <div class="filters">
+            <label>Status:
+                <select id="filtroStatus">
+                    <option value="Todos">Todos</option>
+                    <option value="Aberta">Aberta</option>
+                    <option value="Em Andamento">Em Andamento</option>
+                    <option value="Finalizada">Finalizada</option>
+                </select>
+            </label>
+            <label>Buscar:
+                <input type="text" id="filtroBusca" placeholder="Descrição...">
+            </label>
+            <label>Data:
+                <input type="date" id="filtroData">
+            </label>
         </div>
 
         <!-- Seção de Ordens Recentes -->
@@ -153,10 +163,18 @@
                 <a href="ordens/listar-ordens.html" class="view-all">Ver todas</a>
             </div>
 
+            <!-- Container preenchido pelo JS -->
             <div class="orders-grid" id="recentOrders"></div>
         </div>
 
-        <!-- Seção de Atividades Rápidas -->
+        <!-- Modal de Detalhes -->
+        <div id="detalhesModal" class="modal">
+            <div class="modal-content" id="modalContent">
+                <span class="modal-close" id="modalClose">&times;</span>
+            </div>
+        </div>
+
+        <!-- Seção de Ações Rápidas -->
         <div class="quick-actions">
             <div class="section-header">
                 <h2><i class="fas fa-bolt"></i> Ações Rápidas</h2>
@@ -164,33 +182,25 @@
 
             <div class="actions-grid">
                 <a href="ordens/criar-ordem.html" class="action-card">
-                    <div class="action-icon">
-                        <i class="fas fa-plus-circle"></i>
-                    </div>
+                    <div class="action-icon"><i class="fas fa-plus-circle"></i></div>
                     <h3>Criar Ordem</h3>
                     <p>Registre uma nova ordem de serviço</p>
                 </a>
 
                 <a href="patrimonio/patrimonio-listar.html" class="action-card">
-                    <div class="action-icon">
-                        <i class="fas fa-laptop-house"></i>
-                    </div>
+                    <div class="action-icon"><i class="fas fa-laptop-house"></i></div>
                     <h3>Ver Patrimônio</h3>
                     <p>Consulte equipamentos por sala</p>
                 </a>
 
                 <a href="usuarios/gerenciar-usuarios.html" class="action-card">
-                    <div class="action-icon">
-                        <i class="fas fa-user-plus"></i>
-                    </div>
+                    <div class="action-icon"><i class="fas fa-user-plus"></i></div>
                     <h3>Adicionar Usuário</h3>
                     <p>Cadastre novo professor ou técnico</p>
                 </a>
 
                 <a href="patrimonio/relatorios.html" class="action-card">
-                    <div class="action-icon">
-                        <i class="fas fa-chart-pie"></i>
-                    </div>
+                    <div class="action-icon"><i class="fas fa-chart-pie"></i></div>
                     <h3>Ver Relatórios</h3>
                     <p>Analise dados e estatísticas</p>
                 </a>
@@ -198,6 +208,7 @@
         </div>
     </main>
 
+    <!-- Script do painel de suporte -->
     <script src="../../assets/js/suporte.js"></script>
 </body>
 </html>
