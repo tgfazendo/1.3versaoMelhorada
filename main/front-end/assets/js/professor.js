@@ -77,10 +77,11 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+    // Sua função corrigida:
     function fillUserInfo() {
-        userNameEl.textContent = user.nome;
-        userEmailEl.textContent = user.email;
-        welcomeNameEl.textContent = user.nome;
+    userNameEl?.textContent = user.nome;
+    userEmailEl?.textContent = user.email;
+    welcomeNameEl?.textContent = user.nome;
     }
 
     // =========================
@@ -101,7 +102,7 @@ document.addEventListener('DOMContentLoaded', function() {
             recentOrdersEl.innerHTML = "<p>Erro ao carregar ordens.</p>";
         }
     }
-
+ // mudança feita por vitoria
     function renderOrdens(ordens) {
         if (!recentOrdersEl) return;
 
@@ -109,14 +110,21 @@ document.addEventListener('DOMContentLoaded', function() {
         let pendentes = 0;
         let andamento = 0;
 
-        ordens.forEach(o => {
+        // Ordena as ordens mais recentes e pega apenas as 3 últimas
+        const ultimasOrdens = ordens
+            .sort((a, b) => new Date(b.data_criacao) - new Date(a.data_criacao))
+            .slice(0, 3);
+
+        ultimasOrdens.forEach(o => {
             const div = document.createElement("div");
+
             // Classe CSS baseada no status
             let statusClass = "";
             switch(o.status) {
-                case "Aberta": statusClass = "aberta"; pendentes++; break;
+                case "Pendente": statusClass = "pendente"; pendentes++; break;
                 case "Em Andamento": statusClass = "em-andamento"; andamento++; break;
-                case "Finalizada": statusClass = "finalizada"; break;
+                case "Concluída": statusClass = "concluida"; break;
+                case "Não Concluída": statusClass = "nao-concluida"; break;
                 default: statusClass = "desconhecido"; break;
             }
 
@@ -142,6 +150,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (badgePendentesEl) badgePendentesEl.textContent = pendentes;
         if (badgeAndamentoEl) badgeAndamentoEl.textContent = andamento;
     }
+ // fim da mudança feita por vitoria
 
     // =========================
     // Inicializar tudo

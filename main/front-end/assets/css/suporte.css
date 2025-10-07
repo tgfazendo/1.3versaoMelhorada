@@ -66,6 +66,15 @@
 .logo-text { color: white; font-weight: bold; margin-left: 10px; }
 .user-profile { display: flex; align-items: center; position: relative; }
 .profile-info { text-align: right; margin-right: 15px; }
+/* adição feita por vitoria */
+.profile-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end; /* mantém o texto alinhado à direita */
+    margin-right: 15px;
+    /* remova text-align: right; se quiser (não é mais necessário) */
+}
+/* fim da adição */
 .user-name { font-weight: 600; font-size: 0.95rem; }
 .user-email { font-size: 0.8rem; opacity: 0.8; }
 .profile-avatar {

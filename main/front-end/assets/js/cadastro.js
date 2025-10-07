@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", function () {
   // 🔗 URL do backend
-  const API_URL = "https://bdd339d3-9d30-4502-bb65-c2df41043c71-00-19kadynhvjmtz.spock.replit.dev/api"; // Inclui /api
+  const API_URL = "https://d6cb9ef4-0558-4d9e-ae4b-373ed91db0d4-00-uvpvhwft63sr.spock.replit.dev"; // Inclui /api
 
   // Elementos do DOM
   const registerForm = document.getElementById("registerForm");
@@ -13,7 +13,61 @@ document.addEventListener("DOMContentLoaded", function () {
   const strengthText = document.querySelector(".strength-text strong");
   const phoneInput = document.getElementById("phone");
   const submitBtn = document.querySelector(".btn-submit");
+  const emailInput = document.getElementById("email");
 
+    // mudança feita por vitoria
+        // ================== AUTOCOMPLETE DE DOMÍNIO ==================
+        // 💡 IMPORTANTE: A lógica de autocompletar vai AQUI DENTRO do único DOMContentLoaded
+
+        if (emailInput) { // Verifica se o elemento existe antes de adicionar o listener
+            const DOMAIN_FATEC = "fatec.sp.gov.br";
+            const DOMAIN_PROTON = "proton.me";
+
+            emailInput.addEventListener('input', function() {
+                let currentValue = this.value;
+
+                // Encontra a posição do '@'
+                const atIndex = currentValue.indexOf('@');
+
+                // Se não houver '@', não faz nada
+                if (atIndex === -1) {
+                    return;
+                }
+
+                const domainPart = currentValue.substring(atIndex + 1);
+
+                // --- 1. Lógica: Digitar "@" (domínio vazio) -> Completa com FATEC ---
+                if (domainPart === '') {
+                    this.value = currentValue + DOMAIN_FATEC;
+                    this.setSelectionRange(this.value.length, this.value.length);
+                    return; 
+                }
+
+                // --- 2. Lógica: Apagou/Quebrou o FATEC -> Completa com PROTON ---
+                const expectedFatecDomain = DOMAIN_FATEC; 
+
+                // Se o domínio atual NÃO é o FATEC COMPLETO
+                if (domainPart !== expectedFatecDomain) {
+
+                    // Se o domínio atual NÃO é o PROTON COMPLETO (para não criar um loop)
+                    if (domainPart !== DOMAIN_PROTON) {
+
+                        // Condição: Se a parte digitada APÓS o @ começa com as letras do FATEC,
+                        // mas não é o Fatec completo (indicando que foi parcialmente apagado)
+                        if (expectedFatecDomain.startsWith(domainPart) && domainPart.length < expectedFatecDomain.length) {
+
+                            // Substitui a parte do domínio pelo PROTON
+                            this.value = currentValue.substring(0, atIndex + 1) + DOMAIN_PROTON;
+                            this.setSelectionRange(this.value.length, this.value.length);
+                            return;
+                        }
+                    }
+                }
+            });
+        }
+
+     // fim da mudança feita por vitoria
+    
   // Máscara para telefone
   if (phoneInput) {
       phoneInput.addEventListener("input", function (e) {
@@ -46,7 +100,7 @@ document.addEventListener("DOMContentLoaded", function () {
           }
       });
   });
-
+    
   // Verificar correspondência de senhas
   if (confirmPasswordInput) {
       confirmPasswordInput.addEventListener("input", checkPasswordMatch);
@@ -79,7 +133,7 @@ document.addEventListener("DOMContentLoaded", function () {
               };
 
               // Enviar para o backend
-              fetch(`${API_URL}/cadastro`, {
+              fetch(`${API_URL}/api/cadastro`, {
                   method: "POST",
                   headers: { "Content-Type": "application/json" },
                   body: JSON.stringify(formData),

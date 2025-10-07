@@ -119,7 +119,7 @@ document.addEventListener('DOMContentLoaded', function() {
         cardMinhas.textContent = ordens.filter(o => o.responsavel_id === user.id).length;
         cardConcluidas.textContent = ordens.filter(o => o.status === "Finalizada").length;
     }
-
+ // mudança feita por vitoria
     function renderRecentOrders(ordens) {
         if (!recentOrdersContainer) return;
         recentOrdersContainer.innerHTML = "";
@@ -129,9 +129,14 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
-        ordens.forEach(order => {
+        // Ordena as ordens pela data de criação mais recente e pega só 3
+        const ordensRecentes = ordens
+            .sort((a, b) => new Date(b.data_criacao) - new Date(a.data_criacao))
+            .slice(0, 3);
+
+        ordensRecentes.forEach(order => {
             const orderCard = document.createElement('div');
-            const statusClass = order.status.replace(/\s/g, '-').toLowerCase(); // em-andamento, finalizada, aberta
+            const statusClass = order.status.replace(/\s/g, '-').toLowerCase();
             orderCard.className = `order-card ${statusClass}`;
             orderCard.dataset.id = order.id;
 
@@ -169,14 +174,28 @@ document.addEventListener('DOMContentLoaded', function() {
         bindOrderButtons();
     }
 
+ // fim da mudancça feita por vitoria
+        });
+
+        bindOrderButtons();
+    }
+ // mudança feita por vitoria
     function getStatusHTML(status) {
         switch (status) {
-            case "Aberta": return '<i class="fas fa-clock"></i> Aberta';
-            case "Em Andamento": return '<i class="fas fa-spinner"></i> Em Andamento';
-            case "Finalizada": return '<i class="fas fa-check"></i> Finalizada';
-            default: return '<i class="fas fa-question"></i> Desconhecido';
+            case "Pendente": 
+                return '<i class="fas fa-clock"></i> Pendente';
+            case "Em Andamento": 
+                return '<i class="fas fa-spinner"></i> Em Andamento';
+            case "Concluída": 
+                return '<i class="fas fa-check-circle"></i> Concluída';
+            case "Não Concluída": 
+                return '<i class="fas fa-times-circle"></i> Não Concluída';
+            default: 
+                return '<i class="fas fa-question"></i> Desconhecido';
         }
     }
+// fim da mudança feita por vitoria
+
 
     function getButtonsHTML(order) {
         let buttons = "";

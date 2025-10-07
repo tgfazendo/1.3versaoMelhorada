@@ -2,6 +2,45 @@
    Estilos da Página Sobre
    ======================= */
 
+/* alterado por vitoria */
+.gradient-box{
+  height: 400px;
+  background: var(--gradient);
+  border-radius: 20px;
+  transform: rotate(5deg);          /* se quiser o tilt do cartão */
+  box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+  overflow: hidden;                 /* fundamental para não vazar */
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* imagem dentro da box */
+.gradient-box img{
+  width: 70%;           /* ajusta conforme desejar */
+  max-width: 320px;
+  height: auto;
+  object-fit: contain;  /* ou cover se preferir preencher */
+  display: block;
+  position: relative;
+  z-index: 1;
+  transform: rotate(-5deg); /* cancela a rotação do container para deixar o logo reto.
+                              Remova essa linha se quiser que o logo também fique inclinado */
+}
+
+/* opcional: overlay de gradiente *por cima* da imagem */
+.gradient-box::before{
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 20px;
+  background: linear-gradient(to bottom, rgba(16,23,40,0.2), rgba(16,23,40,0.6));
+  z-index: 2;
+  pointer-events: none;
+}
+
+
 /* Hero Section */
 .hero-section {
     background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
@@ -145,7 +184,7 @@
 
 .team-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 2rem;
 }
 

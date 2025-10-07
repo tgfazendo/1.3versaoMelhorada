@@ -16,6 +16,12 @@ DB_PASS="sua_senha"
 # Caminhos dos arquivos SQL
 SQL1="main/datadb/matriculas_autorizadas.sql"
 SQL2="main/datadb/users.sql"
+SQL3="main/datadb/resetSenha.sql"
+SQL4="main/datadb/ordens.sql"
+SQL5="main/datadb/ordens_problemas.sql"
+SQL6="main/datadb/ordens_instalacoes.sql"
+SQL7="main/datadb/ordens_anexos.sql"
+
 
 echo "=== Inicializando PostgreSQL ==="
 
@@ -52,6 +58,11 @@ psql -h 127.0.0.1 -U runner -d "$DB_NAME" -c "ALTER SCHEMA public OWNER TO $DB_U
 echo "Importando SQLs..."
 psql -h 127.0.0.1 -U "$DB_USER" -d "$DB_NAME" -f "$SQL1"
 psql -h 127.0.0.1 -U "$DB_USER" -d "$DB_NAME" -f "$SQL2"
+psql -h 127.0.0.1 -U "$DB_USER" -d "$DB_NAME" -f "$SQL3"
+psql -h 127.0.0.1 -U "$DB_USER" -d "$DB_NAME" -f "$SQL4"
+psql -h 127.0.0.1 -U "$DB_USER" -d "$DB_NAME" -f "$SQL5"
+psql -h 127.0.0.1 -U "$DB_USER" -d "$DB_NAME" -f "$SQL6"
+psql -h 127.0.0.1 -U "$DB_USER" -d "$DB_NAME" -f "$SQL7"
 
 echo "=== PostgreSQL configurado com sucesso! ==="
 echo "Para acessar o banco: psql -h 127.0.0.1 -U $DB_USER -d $DB_NAME"

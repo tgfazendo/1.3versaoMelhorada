@@ -200,72 +200,94 @@ document.addEventListener('DOMContentLoaded', function() {
         handleFileUpload();
     }
 
-    function validateForm() {
-        const requestTypeRadio = document.querySelector('input[name="request-type"]:checked');
-        const locationTypeRadio = document.querySelector('input[name="location-type"]:checked');
-        if (!requestTypeRadio || !locationTypeRadio) return false;
-
-        const isInstallation = requestTypeRadio.value === 'installation';
-        const isLab = locationTypeRadio.value === 'lab';
-        const locationSelect = isLab ? document.getElementById('lab') : document.getElementById('classroom');
-        const location = locationSelect?.value;
-
-        if (!location) {
-            alert('Por favor, selecione um local válido.');
-            return false;
-        }
-
-        if (!isInstallation) {
-            if (!equipmentTypeSelect?.value) {
-                alert('Por favor, selecione um equipamento.');
-                return false;
-            }
-            if (!problemTypeSelect?.value) {
-                alert('Por favor, selecione um tipo de problema.');
-                return false;
-            }
-        } else {
-            const appName = document.getElementById('app-name')?.value;
-            if (!appName) {
-                alert('Por favor, informe o nome do aplicativo.');
-                return false;
-            }
-        }
-
-        return true;
-    }
+   
+//começã aqui a mudança feita por vitoria    
+    // ----------------------
+    // Função de envio final
+    // ----------------------
 
     // ----------------------
     // Função de envio final
     // ----------------------
+
     async function submitFormFinal(e) {
         e.preventDefault();
-        if (!validateForm()) return;
 
-        const token = localStorage.getItem("authToken");
-        const user = JSON.parse(localStorage.getItem("currentUser"));
-        if (!token || !user) {
-            alert("Usuário não autenticado. Faça login novamente.");
-            window.location.href = "../../login.html";
+        // ----------------------
+        // Validação básica
+        // ----------------------
+        const requestTypeRadio = document.querySelector('input[name="request-type"]:checked');
+        const locationTypeRadio = document.querySelector('input[name="location-type"]:checked');
+
+        if (!requestTypeRadio || !locationTypeRadio) {
+            alert("Por favor, selecione tipo de solicitação e localização.");
             return;
         }
 
-        const formData = new FormData(form);
+        const isInstallation = requestTypeRadio.value === "installation";
+        const isLab = locationTypeRadio.value === "lab";
 
-        // Mapear valores para o banco
-        const tipoSolicitacao = formData.get("request-type") === "problem" ? "problema" : "instalacao";
-        const localTipo = formData.get("location-type") === "classroom" ? "sala" : "laboratorio";
-        const localDetalhe = formData.get("classroom") || formData.get("lab") || "";
-        const descricao = tipoSolicitacao === "problema" ? (formData.get("problem-description") || "Sem descrição") : "Ordem de instalação";
-        const observacoes = formData.get("installation-notes") || null;
-        const equipamento = tipoSolicitacao === "problema" ? (formData.get("equipment-type") || "Outro") : null;
-        const tipoProblema = tipoSolicitacao === "problema" ? (formData.get("problem-type") || "Outro") : null;
-        const appNome = tipoSolicitacao === "instalacao" ? (formData.get("app-name") || "Sem nome") : null;
-        const appVersao = tipoSolicitacao === "instalacao" ? (formData.get("app-version") || null) : null;
-        const appLink = tipoSolicitacao === "instalacao" ? (formData.get("app-link") || null) : null;
+        // Local detalhado
+        let localDetalhe;
+        if (!isLab) {
+            const classroom = document.getElementById("classroom")?.value;
+            if (!classroom) { alert("Selecione a sala."); return; }
+            localDetalhe = classroom;
+        } else {
+            const lab = document.getElementById("lab")?.value;
+            const position = document.getElementById("position")?.value;
+            if (!lab) { alert("Selecione o laboratório."); return; }
+            localDetalhe = lab + (position ? ` - ${position}` : '');
+        }
+
+        // ----------------------
+        // Dados principais
+        // ----------------------
+        const tipoSolicitacao = isInstallation ? "instalacao" : "problema";
+        const localTipo = isLab ? "laboratorio" : "sala";
+
+        // Campos de problema ou instalação
+        let equipamento = null;
+        let tipoProblema = null;
+        let descricao = null;
+        let observacoes = null;
+        let appNome = null;
+        let appVersao = null;
+        let appLink = null;
+
+        if (isInstallation) {
+            // Pega diretamente do DOM, mesmo ocultos
+            appNome = document.getElementById("app-name")?.value;
+            if (!appNome) {
+                alert("O Nome do Aplicativo é obrigatório para instalação.");
+                return;
+            }
+
+            appVersao = document.getElementById("app-version")?.value || null;
+            appLink = document.getElementById("app-link")?.value || null;
+            descricao = document.getElementById("installation-notes")?.value || `Solicitação de instalação: ${appNome}`; // Garante que a descrição não é vazia
+            observacoes = descricao; // Observações para instalação
+        } else {
+            // Caso 'Relatar Problema'
+            equipamento = document.getElementById("equipment-type")?.value || "Outro";
+            tipoProblema = document.getElementById("problem-type")?.value || "Outro";
+
+            descricao = document.getElementById("problem-description")?.value;
+
+            // Validação de campos de problema
+            if (!equipamento || !tipoProblema) {
+                alert("Selecione o equipamento e o tipo de problema.");
+                return;
+            }
+            if (!descricao) {
+                alert("A descrição detalhada do problema é obrigatória.");
+                return;
+            }
+
+            observacoes = null;
+        }
 
         const body = {
-            usuario_id: user.id,
             tipo_solicitacao: tipoSolicitacao,
             local_tipo: localTipo,
             local_detalhe: localDetalhe,
@@ -280,7 +302,18 @@ document.addEventListener('DOMContentLoaded', function() {
 
         console.log("=== Dados enviados para o backend ===", body);
 
+        // ----------------------
+        // Token do usuário
+        // ----------------------
+        const token = localStorage.getItem("authToken");
+        if (!token) {
+            alert("Usuário não autenticado. Faça login novamente.");
+            window.location.href = "../../login.html";
+            return;
+        }
+
         try {
+            // Criação da ordem
             const res = await fetch("/api/ordens", {
                 method: "POST",
                 headers: {
@@ -290,9 +323,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 body: JSON.stringify(body)
             });
 
-            let data;
-            try { data = await res.json(); } catch { data = {}; }
-
+            const data = await res.json().catch(() => ({}));
             console.log("=== Resposta do backend ===", res.status, data);
 
             if (!res.ok) {
@@ -306,6 +337,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
 
+            // Upload de arquivos
+            const fileUpload = document.getElementById("file-upload");
+            const fileList = document.getElementById("file-list");
             if (fileUpload?.files.length > 0) {
                 const arquivosForm = new FormData();
                 for (const file of fileUpload.files) arquivosForm.append("file-upload", file);
@@ -320,7 +354,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             alert("Ordem criada com sucesso!");
-            form.reset();
+            document.getElementById("order-form").reset();
             if (fileList) fileList.innerHTML = '';
             window.location.href = "minhas-ordens.html";
 
@@ -329,6 +363,9 @@ document.addEventListener('DOMContentLoaded', function() {
             alert("Erro ao criar a ordem. Tente novamente.");
         }
     }
+
+    
+ //termina aqui a mudança feita por vitoria
 
     // ----------------------
     // Event Listeners
