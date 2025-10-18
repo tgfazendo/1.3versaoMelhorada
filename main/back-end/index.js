@@ -37,3 +37,10 @@ async function atualizarAlertas() {
 }
 
 setInterval(atualizarAlertas, 24 * 60 * 60 * 1000); // roda todo dia
+
+// isso daqui é do perfil
+import perfilRoutes from './routes/perfil.js'; // rota que vamos criar
+app.use('/perfil', perfilRoutes);
+
+// Servir arquivos de uploads
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));

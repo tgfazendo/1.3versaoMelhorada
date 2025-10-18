@@ -27,8 +27,8 @@
             
             <div class="user-profile">
                 <div class="profile-info">
-                    <span class="user-name">Auxiliar Docente Carlos</span>
-                    <span class="user-email">carlos.sousa25@fatec.sp.gov.br</span>
+                    <span class="user-name" id="userName"></span>
+                    <span class="user-email" id="userEmail"></span>
                 </div>
                 <div class="profile-dropdown">
                     <img src="../../assets/images/default-avatar.png" alt="Foto do Suporte" class="profile-avatar" id="profile-toggle">
@@ -131,14 +131,6 @@
                             </div>
                         </div>
                         
-                        <div class="form-group">
-                            <label for="birthdate">Data de Nascimento</label>
-                            <div class="input-with-icon">
-                                <i class="fas fa-calendar-alt"></i>
-                                <input type="date" id="birthdate" value="2007-06-04" required>
-                            </div>
-                        </div>
-                    </div>
                     
                     <div class="form-group">
                         <label for="fullname">Nome Completo</label>
@@ -156,13 +148,7 @@
                         </div>
                     </div>
                     
-                    <div class="form-group">
-                        <label for="phone">Número do Celular</label>
-                        <div class="input-with-icon">
-                            <i class="fas fa-phone"></i>
-                            <input type="tel" id="phone" value="(11) 98765-4321" pattern="\(\d{2}\) \d{5}-\d{4}" required>
-                        </div>
-                    </div>
+                    
                     
                     <div class="form-actions">
                         <button type="submit" class="btn btn-primary">
