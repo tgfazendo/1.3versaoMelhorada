@@ -12,7 +12,7 @@
     <h1><i class="fa-solid fa-users"></i> Gerenciar Usuários</h1>
     <div class="user-info">
       <span id="user-name">Administrador</span>
-      <button id="logout-btn"><i class="fa-solid fa-right-from-bracket"></i> Sair</button>
+      <button id="back-btn"><i class="fa-solid fa-arrow-left"></i> Voltar</button>
     </div>
   </header>
 
@@ -51,32 +51,14 @@
               <th>Ações</th>
             </tr>
           </thead>
-          <tbody>
-            <tr>
-              <td>1</td>
-              <td>João Silva</td>
-              <td>joao@teste.com</td>
-              <td>Suporte</td>
-              <td>
-                <button class="edit"><i class="fa-solid fa-pen"></i></button>
-                <button class="delete"><i class="fa-solid fa-trash"></i></button>
-              </td>
-            </tr>
-            <tr>
-              <td>2</td>
-              <td>Maria Oliveira</td>
-              <td>maria@teste.com</td>
-              <td>Professor</td>
-              <td>
-                <button class="edit"><i class="fa-solid fa-pen"></i></button>
-                <button class="delete"><i class="fa-solid fa-trash"></i></button>
-              </td>
-            </tr>
+          <tbody id="usuarios-tbody">
+            <!-- Usuários serão inseridos dinamicamente pelo JS -->
           </tbody>
         </table>
       </div>
     </section>
   </main>
+
   <script src="../../assets/js/gerenciar-usuarios.js"></script>
 </body>
 </html>

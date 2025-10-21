@@ -1,4 +1,3 @@
-.js
 #!/bin/bash
 # setup_postgres.sh
 # Script completo para configurar PostgreSQL no Replit com permissões corretas

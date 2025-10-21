@@ -1,4 +1,4 @@
-import { pool } from '../config/db.js';
+import  pool  from '../config/db.js';
 import path from 'path';
 import fs from 'fs';
 import bcrypt from 'bcryptjs';

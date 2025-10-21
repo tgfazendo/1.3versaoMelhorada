@@ -34,9 +34,7 @@
 
       <div class="filters">
         <select id="select-user">
-          <option value="">Selecionar usuário do suporte</option>
-          <option value="1">João Silva</option>
-          <option value="2">Maria Oliveira</option>
+          <option value="">Carregando usuários...</option>
         </select>
 
         <div>
@@ -50,7 +48,7 @@
 
         <input type="date" id="end-date" style="display:none;" placeholder="Data de término">
 
-        <button class="add-item"><i class="fa-solid fa-bolt"></i> Confirmar</button>
+        <button id="confirm-btn" class="add-item"><i class="fa-solid fa-bolt"></i> Confirmar</button>
       </div>
 
       <p>Escolha um usuário do suporte e selecione o tipo de transferência de admin:</p>
@@ -71,40 +69,15 @@
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td>1</td>
-              <td>João Silva</td>
-              <td>Permanente</td>
-              <td>-</td>
-              <td><span class="status in-progress">Concluído</span></td>
-            </tr>
-            <tr>
-              <td>2</td>
-              <td>Maria Oliveira</td>
-              <td>Temporário</td>
-              <td>15/10/2025</td>
-              <td><span class="status pending">Pendente</span></td>
-            </tr>
+            <!-- Conteúdo dinâmico carregado via JS -->
           </tbody>
         </table>
       </div>
     </section>
   </main>
 
-  <script>
-    // Mostrar campo de data apenas se "temporário" estiver selecionado
-    const radios = document.querySelectorAll('input[name="transfer-type"]');
-    const endDate = document.getElementById('end-date');
-
-    radios.forEach(radio => {
-      radio.addEventListener('change', () => {
-        if (radio.value === 'temporario' && radio.checked) {
-          endDate.style.display = 'inline-block';
-        } else {
-          endDate.style.display = 'none';
-        }
-      });
-    });
-  </script>
+  <!-- Scripts separados -->
+  <script src="../../assets/js/transferir-poder-ui.js"></script>
+  <script src="../../assets/js/transferir-poder-api.js"></script>
 </body>
 </html>

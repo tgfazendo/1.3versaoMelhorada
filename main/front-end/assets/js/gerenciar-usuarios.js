@@ -1,29 +1,18 @@
 document.addEventListener("DOMContentLoaded", async () => {
-  const token = localStorage.getItem("authToken");
-  const user = JSON.parse(localStorage.getItem("currentUser"));
-
-   // Impede acesso se não for admin
-  /*if (!token || !user || user.role !== "admin") {
-    window.location.href = "../../login.html";
-    return;
-  } */
-
-  const tbody = document.querySelector("tbody");
+  const tbody = document.getElementById("usuarios-tbody");
   const filterRole = document.getElementById("filter-role");
   const searchInput = document.getElementById("search-user");
-  const logoutBtn = document.getElementById("logout-btn");
-  const userName = document.getElementById("user-name");
+  const backBtn = document.getElementById("back-btn");
 
-  userName.textContent = user.nome;
+  // URL base do backend (funciona local ou no Replit)
+  const BASE_URL = window.location.origin;
 
   // -------------------------------
   // Função: Buscar todos os usuários
   // -------------------------------
   async function carregarUsuarios() {
     try {
-      const res = await fetch("http://localhost:3000/api/admin/usuarios", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await fetch(`${BASE_URL}/api/admin/usuarios`);
       if (!res.ok) throw new Error("Erro ao carregar usuários");
       const data = await res.json();
       renderUsuarios(data);
@@ -70,9 +59,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     if (confirm("Deseja realmente excluir este usuário?")) {
       try {
-        const res = await fetch(`http://localhost:3000/api/admin/usuarios/${id}`, {
-          method: "DELETE",
-          headers: { Authorization: `Bearer ${token}` },
+        const res = await fetch(`${BASE_URL}/api/admin/usuarios/${id}`, {
+          method: "DELETE"
         });
         if (!res.ok) throw new Error("Erro ao excluir");
         await carregarUsuarios();
@@ -88,12 +76,16 @@ document.addEventListener("DOMContentLoaded", async () => {
   // -------------------------------
   filterRole.addEventListener("change", async () => {
     const cargo = filterRole.value;
-    const res = await fetch("http://localhost:3000/api/admin/usuarios", {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    let usuarios = await res.json();
-    if (cargo) usuarios = usuarios.filter((u) => u.role === cargo);
-    renderUsuarios(usuarios);
+    try {
+      const res = await fetch(`${BASE_URL}/api/admin/usuarios`);
+      if (!res.ok) throw new Error("Erro ao carregar usuários");
+      let usuarios = await res.json();
+      if (cargo) usuarios = usuarios.filter((u) => u.role === cargo);
+      renderUsuarios(usuarios);
+    } catch (error) {
+      console.error(error);
+      tbody.innerHTML = `<tr><td colspan="5">Erro ao filtrar usuários.</td></tr>`;
+    }
   });
 
   // -------------------------------
@@ -101,25 +93,27 @@ document.addEventListener("DOMContentLoaded", async () => {
   // -------------------------------
   searchInput.addEventListener("input", async () => {
     const termo = searchInput.value.toLowerCase();
-    const res = await fetch("http://localhost:3000/api/admin/usuarios", {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    let usuarios = await res.json();
-    usuarios = usuarios.filter(
-      (u) =>
-        u.nome.toLowerCase().includes(termo) ||
-        u.email.toLowerCase().includes(termo)
-    );
-    renderUsuarios(usuarios);
+    try {
+      const res = await fetch(`${BASE_URL}/api/admin/usuarios`);
+      if (!res.ok) throw new Error("Erro ao carregar usuários");
+      let usuarios = await res.json();
+      usuarios = usuarios.filter(
+        (u) =>
+          u.nome.toLowerCase().includes(termo) ||
+          u.email.toLowerCase().includes(termo)
+      );
+      renderUsuarios(usuarios);
+    } catch (error) {
+      console.error(error);
+      tbody.innerHTML = `<tr><td colspan="5">Erro ao pesquisar usuários.</td></tr>`;
+    }
   });
 
   // -------------------------------
-  // Logout
+  // Voltar para painel principal
   // -------------------------------
-  logoutBtn.addEventListener("click", () => {
-    localStorage.removeItem("authToken");
-    localStorage.removeItem("currentUser");
-    window.location.href = "../../login.html";
+  backBtn.addEventListener("click", () => {
+    window.location.href = "painel-admin.html";
   });
 
   // Inicialização
